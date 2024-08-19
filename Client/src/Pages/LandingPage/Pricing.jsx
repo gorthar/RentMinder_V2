@@ -6,7 +6,7 @@ export default function Pricing() {
       name: "Starter Plan",
       price: 0,
       explanation:
-        "ndividual landlords or small property managers with up to 5 units.",
+        "Individual landlords or small property managers with up to 5 units.",
       features: [
         "Manage up to 5 rental units",
         "Tenant communication tools (basic messaging)",

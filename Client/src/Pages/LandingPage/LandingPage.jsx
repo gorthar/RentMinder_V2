@@ -3,6 +3,7 @@ import Navbar from "./Navbar";
 import Features from "./Features";
 import Pricing from "./Pricing";
 import SocialProof from "./SocialProof";
+import Footer from "./Footer";
 
 export default function LandingPage() {
   return (
@@ -12,6 +13,7 @@ export default function LandingPage() {
       <Features />
       <Pricing />
       <SocialProof />
+      <Footer />
     </div>
   );
 }
