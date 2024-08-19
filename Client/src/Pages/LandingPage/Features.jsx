@@ -9,34 +9,34 @@ import Feature from "./Feature";
 export default function Features() {
   const features = [
     {
-      text: "Plan it, create it, launch it. Collaborate seamlessly with all the organization and hit your marketing goals every month with our marketing plan.",
-      headerText: "Marketing",
-      svg: <BoardSVG />,
+      text: "Manage your property portfolio with ease, from listing vacancies to tracking paayments.",
+      headerText: "Property Listings",
+      svg: <BoardSVG className={"h-8 w-8"} />,
     },
     {
-      text: "Protect your organization, devices and stay compliant with our structured workflows and custom permissions made for you.",
-      headerText: "Legal",
-      svg: <CapSVG />,
+      text: "Ensure you find the best tenants with our comprehensive screening process.",
+      headerText: "Tenant Screening",
+      svg: <CapSVG className={"h-8 w-8"} />,
     },
     {
-      text: "Auto-assign tasks, send Slack messages, and much more. Now power up with hundreds of new templates to help you get started.",
-      headerText: "Business Automation",
-      svg: <HandBagSVG />,
+      text: "Automate rent payments and keep your finances in check effortlessly.",
+      headerText: "Rent Collection",
+      svg: <HandBagSVG className={"h-8 w-8"} />,
     },
     {
-      text: "Audit-proof software built for critical financial operations like month-end close and quarterly budgeting.",
-      headerText: "Finance",
-      svg: <DollarSVG />,
+      text: "Get detailed insights into your property performance with our powerful reporting tools.",
+      headerText: "Financial Reporting",
+      svg: <DollarSVG className={"h-8 w-8"} />,
     },
     {
-      text: "Craft beautiful, delightful experiences for both marketing and product with real cross-company collaboration.",
-      headerText: "Enterprise Design",
-      svg: <CardsSVG />,
+      text: "Store and organize all your important documents in one secure place.",
+      headerText: "Document Management",
+      svg: <CardsSVG className={"h-8 w-8"} />,
     },
     {
-      text: "Keep your company’s lights on with customizable, iterative, and structured workflows built for all efficient teams and individual.",
-      headerText: "Operations",
-      svg: <GearSVG />,
+      text: "Handle maintenance requests quickly and efficiently with our streamlined system.",
+      headerText: "Maintenance Requests",
+      svg: <GearSVG className={"h-8 w-8"} />,
     },
   ];
   return (
@@ -44,11 +44,11 @@ export default function Features() {
       <div className="py-8 px-4 mx-auto max-w-screen-xl sm:py-16 lg:px-6">
         <div className="max-w-screen-md mb-8 lg:mb-16">
           <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
-            Designed for business teams like yours
+            Built for Landlords Like You
           </h2>
           <p className="text-gray-500 sm:text-xl dark:text-gray-400">
-            Here at Flowbite we focus on markets where technology, innovation,
-            and capital can unlock long-term value and drive economic growth.
+            At RentMinder, we focus on providing the technology and support you
+            need to streamline your rental business and boost your profits.
           </p>
         </div>
         <div className="space-y-8 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-12 md:space-y-0">

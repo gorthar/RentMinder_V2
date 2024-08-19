@@ -1,7 +1,8 @@
-export default function CardsSVG() {
+// eslint-disable-next-line react/prop-types
+export default function CardsSVG({ className }) {
   return (
     <svg
-      className="w-5 h-5 text-primary-600 lg:w-6 lg:h-6 dark:text-primary-300"
+      className={className}
       fill="currentColor"
       viewBox="0 0 20 20"
       xmlns="http://www.w3.org/2000/svg"

@@ -2,14 +2,16 @@ import Hero from "./Hero";
 import Navbar from "./Navbar";
 import Features from "./Features";
 import Pricing from "./Pricing";
+import SocialProof from "./SocialProof";
 
 export default function LandingPage() {
   return (
-    <div className=" bg-gradient-to-l from-gray-200 via-fuchsia-200 to-stone-100">
+    <div>
       <Navbar />
       <Hero />
       <Features />
       <Pricing />
+      <SocialProof />
     </div>
   );
 }

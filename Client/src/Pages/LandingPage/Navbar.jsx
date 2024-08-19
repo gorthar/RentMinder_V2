@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import Button from "../../SharedComponents/Button";
+import logo from "../../assets/logo.svg";
 
 function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -29,12 +30,8 @@ function Navbar() {
     <header className="relative">
       <nav className="bg-white border-gray-200 px-2 lg:px-6 py-2.5 dark:bg-gray-800">
         <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
-          <a href="https://flowbite.com" className="flex items-center">
-            <img
-              src="https://flowbite.com/docs/images/logo.svg"
-              className="mr-1 h-6 sm:h-9"
-              alt="RentMinder Logo"
-            />
+          <a href="#" className="flex items-center">
+            <img src={logo} className="mr-1 h-6 sm:h-9" alt="RentMinder Logo" />
             <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
               RentMinder
             </span>
