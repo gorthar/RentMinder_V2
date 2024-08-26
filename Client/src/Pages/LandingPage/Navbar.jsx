@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import Button from "../../SharedComponents/Button";
 import logo from "../../assets/logo.svg";
+import { PropTypes } from "prop-types";
 
-function Navbar() {
+function Navbar({ setOpenAuthModal }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const sidebarRef = useRef(null);
@@ -43,13 +44,17 @@ function Navbar() {
             >
               Contact
             </a>
-            <a
-              href="#"
+            <button
+              onClick={() => setOpenAuthModal({ open: true, isLogin: true })}
               className="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-2 lg:px-5 py-2 lg:py-2.5  dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
             >
               Log in
-            </a>
-            <Button text="Get Started" />
+            </button>
+
+            <Button
+              text="Get Started"
+              onClick={() => setOpenAuthModal({ open: true, isLogin: false })}
+            />
             <button
               data-collapse-toggle="sidebar"
               onClick={toggleMenu}
@@ -143,5 +148,9 @@ function Navbar() {
     </header>
   );
 }
+
+Navbar.propTypes = {
+  setOpenAuthModal: PropTypes.func,
+};
 
 export default Navbar;

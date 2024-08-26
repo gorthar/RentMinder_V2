@@ -1,4 +1,7 @@
-// eslint-disable-next-line react/prop-types
+import PropTypes from "prop-types";
+BoardSVG.propTypes = {
+  className: PropTypes.string,
+};
 export default function BoardSVG({ className }) {
   return (
     <svg
