@@ -81,8 +81,14 @@ export default function SigUp({ setOpenAuthModal }) {
                   }
                   placeholder="name@company.com"
                   {...register("email", {
-                    required: true,
-                    pattern: /^\S+@\S+$/,
+                    required: {
+                      value: true,
+                      message: "Email is required",
+                    },
+                    pattern: {
+                      value: /^\S+@\S+$/i,
+                      message: "Invalid email",
+                    },
                   })}
                 />
                 {errors.email && (
@@ -108,7 +114,10 @@ export default function SigUp({ setOpenAuthModal }) {
                       : " border-gray-300 dark:border-gray-700")
                   }
                   {...register("Name", {
-                    required: true,
+                    required: {
+                      value: true,
+                      message: "First Name is required",
+                    },
                   })}
                 />
                 {errors.Name && (
@@ -134,7 +143,10 @@ export default function SigUp({ setOpenAuthModal }) {
                       : " border-gray-300 dark:border-gray-700")
                   }
                   {...register("Last Name", {
-                    required: true,
+                    required: {
+                      value: true,
+                      message: "Last Name is required",
+                    },
                   })}
                 />
                 {errors["Last Name"] && (
@@ -163,9 +175,19 @@ export default function SigUp({ setOpenAuthModal }) {
                       : " border-gray-300 dark:border-gray-700")
                   }
                   {...register("password", {
-                    required: true,
-                    minLength: 8,
-                    pattern: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
+                    required: {
+                      value: true,
+                      message: "Password is required",
+                    },
+                    minLength: {
+                      value: 8,
+                      message: "Password must have at least 8 characters",
+                    },
+                    pattern: {
+                      value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
+                      message:
+                        "Password must have at least 1 letter and 1 number",
+                    },
                   })}
                 />
                 {errors.password && (
@@ -194,9 +216,19 @@ export default function SigUp({ setOpenAuthModal }) {
                       : " border-gray-300 dark:border-gray-700")
                   }
                   {...register("confirm-password", {
-                    required: true,
-                    minLength: 8,
-                    pattern: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
+                    required: {
+                      value: true,
+                      message: "Password confirmation is required",
+                    },
+                    minLength: {
+                      value: 8,
+                      message: "Password must have at least 8 characters",
+                    },
+                    pattern: {
+                      value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
+                      message:
+                        "Password must have at least 1 letter and 1 number",
+                    },
                   })}
                 />
                 {errors["confirm-password"] && (
@@ -213,7 +245,10 @@ export default function SigUp({ setOpenAuthModal }) {
                     aria-describedby="terms"
                     type="checkbox"
                     className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800"
-                    {...register("terms", { required: true })}
+                    {...register("terms", {
+                      required: true,
+                      message: "You must accept the terms and conditions",
+                    })}
                   />
                 </div>
                 <div className="ml-3 text-sm">
