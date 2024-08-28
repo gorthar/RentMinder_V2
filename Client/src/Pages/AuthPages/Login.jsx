@@ -3,6 +3,7 @@ import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useForm } from "react-hook-form";
 import { PropTypes } from "prop-types";
 import GoogleLoginButton from "../../SharedComponents/GoogleLoginButton";
+import { useState } from "react";
 
 export default function Login({ setOpenAuthModal }) {
   const {
@@ -10,21 +11,29 @@ export default function Login({ setOpenAuthModal }) {
     handleSubmit,
     formState: { errors },
   } = useForm();
+  const [error, setError] = useState(null);
 
   function onLoginFormSubmit(data) {
     const auth = getAuth();
-    signInWithEmailAndPassword(auth, data.email, data.password)
-      .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
-        console.log(user);
-        // ...
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode, errorMessage);
-      });
+    try {
+      signInWithEmailAndPassword(auth, data.email, data.password)
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          console.log(user);
+          // ...
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(errorCode, errorMessage);
+          if (errorCode === "auth/invalid-credential") {
+            setError("Email or password is wrong, please try again");
+          }
+        });
+    } catch (error) {
+      console.error(error);
+    }
   }
   return (
     <section className="bg-gray-50 dark:bg-gray-900 modal">
@@ -77,8 +86,14 @@ export default function Login({ setOpenAuthModal }) {
                   }
                   placeholder="name@company.com"
                   {...register("email", {
-                    required: true,
-                    pattern: /^\S+@\S+$/,
+                    required: {
+                      value: true,
+                      message: "Email is required",
+                    },
+                    pattern: {
+                      value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                      message: "Email is not valid",
+                    },
                   })}
                 />
                 {errors.email && (
@@ -97,9 +112,34 @@ export default function Login({ setOpenAuthModal }) {
                   name="password"
                   id="password"
                   placeholder="••••••••"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  {...register("password", { required: true })}
+                  className={
+                    "bg-gray-50 border text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" +
+                    (errors.password
+                      ? " border-red-700"
+                      : " border-gray-300 dark:border-gray-700")
+                  }
+                  {...register("password", {
+                    required: {
+                      value: true,
+                      message: "Password is required",
+                    },
+                    minLength: {
+                      value: 8,
+                      message: "Password must be at least 8 characters",
+                    },
+                    pattern: {
+                      value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
+                      message:
+                        "Password must contain at least one letter and one number",
+                    },
+                  })}
                 />
+                {errors.password && (
+                  <span className="text-red-500">
+                    {" "}
+                    {errors.password.message}{" "}
+                  </span>
+                )}
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-start "></div>
@@ -137,6 +177,7 @@ export default function Login({ setOpenAuthModal }) {
                 </a>
               </p>
             </form>
+            {error && <div className="text-red-500"> {error} </div>}
           </div>
         </div>
       </div>
