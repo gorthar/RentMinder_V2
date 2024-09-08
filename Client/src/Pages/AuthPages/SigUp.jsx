@@ -43,7 +43,13 @@ export default function SigUp({ setOpenAuthModal }) {
         const errorCode = error.code;
         const errorMessage = error.message;
         console.log(errorCode, errorMessage);
-        toast.error(errorMessage);
+        if (errorCode === "auth/email-already-in-use") {
+          toast.error("Email already in use");
+        } else if (errorCode === "auth/weak-password") {
+          toast.error("Password is too weak");
+        } else {
+          toast.error("An error occurred while creating the account");
+        }
       });
   }
   return (
