@@ -14,7 +14,21 @@ builder.Services.AddDbContext<PropertyManagementContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+var corsPolicy = "CorsPolicy";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: corsPolicy, policy =>
+    {
+        policy.WithOrigins("https://localhost:3001", "http://localhost:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
+
 builder.Services.AddSingleton<FirebaseService>();
+builder.Services.AddScoped<IUserService, TenantService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -49,7 +63,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors(corsPolicy);
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

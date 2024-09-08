@@ -2,6 +2,8 @@ import { PropTypes } from "prop-types";
 import GoogleLoginButton from "../../SharedComponents/GoogleLoginButton";
 import { useForm } from "react-hook-form";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import apiConnector from "../../ApiConnector/connector";
+import { toast } from "react-toastify";
 
 export default function SigUp({ setOpenAuthModal }) {
   const {
@@ -21,12 +23,27 @@ export default function SigUp({ setOpenAuthModal }) {
         // Signed in
         const user = userCredential.user;
         console.log(user);
+        apiConnector.Tenant.register({
+          email: data.email,
+          firstName: data.Name,
+          lastName: data.LastName,
+          idToken: user.accessToken,
+        }).then((response) => {
+          if (response.success === true) {
+            toast.success(response.message);
+            setOpenAuthModal(false);
+          } else {
+            toast.error(response.message);
+          }
+        });
+
         // ...
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
         console.log(errorCode, errorMessage);
+        toast.error(errorMessage);
       });
   }
   return (
@@ -34,7 +51,7 @@ export default function SigUp({ setOpenAuthModal }) {
       <div className="flex flex-col items-center justify-center sm:px-4 py-2 mx-auto  lg:py-0">
         <a
           href="/"
-          className="flex items-center mb-1 text-2xl font-semibold text-gray-900 dark:text-white"
+          className="flex items-center text-2xl font-semibold text-gray-900 dark:text-white"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -58,8 +75,15 @@ export default function SigUp({ setOpenAuthModal }) {
               Create an account
             </h1>
             <GoogleLoginButton setOpenAuthModal={setOpenAuthModal} upIn="Up" />
+            <div className="flex items-center justify-center space-x-2">
+              <div className="h-px bg-gray-300 dark:bg-gray-700 w-full"></div>
+              <span className="font-normal text-gray-400 dark:text-gray-500">
+                or
+              </span>
+              <div className="h-px bg-gray-300 dark:bg-gray-700 w-full"></div>
+            </div>
             <form
-              className="space-y-4 md:space-y-6"
+              className="space-y-2"
               onSubmit={handleSubmit(onSignUpFormSubmit)}
             >
               <div>
@@ -126,33 +150,69 @@ export default function SigUp({ setOpenAuthModal }) {
               </div>
               <div>
                 <label
-                  htmlFor="Last Name"
+                  htmlFor="LastName"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
                   Last Name
                 </label>
                 <input
                   type="text"
-                  name="Last Name"
-                  id="Last Name"
+                  name="LastName"
+                  id="LastName"
                   placeholder="Doe"
                   className={
                     "bg-gray-50 border text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" +
-                    (errors["Last Name"]
+                    (errors.LastName
                       ? " border-red-700"
                       : " border-gray-300 dark:border-gray-700")
                   }
-                  {...register("Last Name", {
+                  {...register("LastName", {
                     required: {
                       value: true,
                       message: "Last Name is required",
                     },
                   })}
                 />
-                {errors["Last Name"] && (
+                {errors.LastName && (
                   <span className="text-red-500">
                     {" "}
-                    {errors["Last Name"].message}{" "}
+                    {errors.LastName.message}{" "}
+                  </span>
+                )}
+              </div>
+              <div>
+                <label
+                  htmlFor="Phone Number"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Phone Number
+                </label>
+                <input
+                  type="text"
+                  name="PhoneNumber"
+                  id="PhoneNumber"
+                  placeholder="Phone Number"
+                  className={
+                    "bg-gray-50 border text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" +
+                    (errors.PhoneNumber
+                      ? " border-red-700"
+                      : " border-gray-300 dark:border-gray-700")
+                  }
+                  {...register("PhoneNumber", {
+                    required: {
+                      value: true,
+                      message: "Phone Number is required",
+                    },
+                    pattern: {
+                      value: /^\d{10}$/,
+                      message: "Phone Number is not valid",
+                    },
+                  })}
+                />
+                {errors.PhoneNumber && (
+                  <span className="text-red-500">
+                    {" "}
+                    {errors.PhoneNumber.message}{" "}
                   </span>
                 )}
               </div>
@@ -205,7 +265,7 @@ export default function SigUp({ setOpenAuthModal }) {
                   Confirm password
                 </label>
                 <input
-                  type="confirm-password"
+                  type="password"
                   name="confirm-password"
                   id="confirm-password"
                   placeholder="••••••••"

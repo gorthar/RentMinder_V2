@@ -43,8 +43,8 @@ public class TenantService : IUserService
                     FirstName = user.DisplayName,
                     LastName = user.DisplayName,
                     PhoneNumber = user.PhoneNumber,
-                    CreatedAt = DateTime.Now,
-                    LastLogin = DateTime.Now
+                    CreatedAt = DateTime.UtcNow,
+                    LastLogin = DateTime.UtcNow
 
                 };
                 _context.Tenants.Add(tenant);
@@ -86,8 +86,8 @@ public class TenantService : IUserService
                     FirstName = registerDto.FirstName,
                     LastName = registerDto.LastName,
                     PhoneNumber = registerDto.PhoneNumber,
-                    CreatedAt = DateTime.Now,
-                    LastLogin = DateTime.Now
+                    CreatedAt = DateTime.UtcNow,
+                    LastLogin = DateTime.UtcNow
                 };
                 _context.Tenants.Add(tenant);
                 await _context.SaveChangesAsync();

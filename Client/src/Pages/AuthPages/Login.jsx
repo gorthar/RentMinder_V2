@@ -4,6 +4,8 @@ import { useForm } from "react-hook-form";
 import { PropTypes } from "prop-types";
 import GoogleLoginButton from "../../SharedComponents/GoogleLoginButton";
 import { useState } from "react";
+import { useAuthContext } from "../../Context/useAuthContext";
+import { toast } from "react-toastify";
 
 export default function Login({ setOpenAuthModal }) {
   const {
@@ -12,6 +14,7 @@ export default function Login({ setOpenAuthModal }) {
     formState: { errors },
   } = useForm();
   const [error, setError] = useState(null);
+  const { setUser } = useAuthContext();
 
   function onLoginFormSubmit(data) {
     const auth = getAuth();
@@ -19,13 +22,16 @@ export default function Login({ setOpenAuthModal }) {
       signInWithEmailAndPassword(auth, data.email, data.password)
         .then((userCredential) => {
           // Signed in
-          const user = userCredential.user;
-          console.log(user);
+          const _user = userCredential.user;
+          toast.success("Logged in successfully");
+          setUser(_user);
+          setOpenAuthModal({ open: false, isLogin: true });
           // ...
         })
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
+          toast.error(errorMessage);
           console.log(errorCode, errorMessage);
           if (errorCode === "auth/invalid-credential") {
             setError("Email or password is wrong, please try again");
