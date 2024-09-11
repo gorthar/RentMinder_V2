@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useAuthContext } from "../../Context/useAuthContext";
 import { toast } from "react-toastify";
 
-export default function Login({ setOpenAuthModal }) {
+export default function Login({ setOpenAuthModal, isLandlord }) {
   const {
     register,
     handleSubmit,
@@ -23,10 +23,16 @@ export default function Login({ setOpenAuthModal }) {
         .then((userCredential) => {
           // Signed in
           const _user = userCredential.user;
+          console.log(_user);
           toast.success("Logged in successfully");
           setUser(_user);
           setOpenAuthModal({ open: false, isLogin: true });
-          // ...
+          // TODO redirect to tenant or landlord dashboard
+          if (isLandlord) {
+            // redirect to landlord dashboard
+          } else {
+            // redirect to tenant dashboard
+          }
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -64,6 +70,7 @@ export default function Login({ setOpenAuthModal }) {
           </svg>
           RentMinder
         </a>
+
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
@@ -193,4 +200,5 @@ export default function Login({ setOpenAuthModal }) {
 
 Login.propTypes = {
   setOpenAuthModal: PropTypes.func,
+  isLandlord: PropTypes.bool,
 };

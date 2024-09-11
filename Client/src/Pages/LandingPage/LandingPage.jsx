@@ -31,7 +31,7 @@ export default function LandingPage() {
         <Modal.Body>
           <Modal.Header></Modal.Header>
           {openAuthModal.isLogin ? (
-            <Login setOpenAuthModal={setOpenAuthModal} />
+            <Login setOpenAuthModal={setOpenAuthModal} isLandlord={true} />
           ) : (
             <SignUp setOpenAuthModal={setOpenAuthModal} />
           )}
