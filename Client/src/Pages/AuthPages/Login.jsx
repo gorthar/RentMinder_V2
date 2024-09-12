@@ -68,7 +68,7 @@ export default function Login({ setOpenAuthModal, isLandlord }) {
               d="M12 6v6m0 0v6m0-6h6m-6 0H6"
             ></path>
           </svg>
-          RentMinder
+          RentMinder {isLandlord ? "Landlord" : "Tenant"}
         </a>
 
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">

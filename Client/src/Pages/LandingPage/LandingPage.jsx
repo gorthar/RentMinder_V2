@@ -1,5 +1,5 @@
 import Hero from "./Hero";
-import Navbar from "./Navbar";
+
 import Features from "./Features";
 import Pricing from "./Pricing";
 import SocialProof from "./SocialProof";
@@ -8,17 +8,19 @@ import { useState } from "react";
 import { Modal } from "flowbite-react";
 import Login from "../AuthPages/Login";
 import SignUp from "../AuthPages/SigUp";
+import Navbar from "./Navbar/Navbar";
 
 export default function LandingPage() {
   const [openAuthModal, setOpenAuthModal] = useState({
     open: false,
     isLogin: true,
+    isLandlord: true,
   });
 
   return (
     <div>
       <Navbar setOpenAuthModal={setOpenAuthModal} />
-      <Hero />
+      <Hero setOpenAuthModal={setOpenAuthModal} />
       <Features />
       <Pricing />
       <SocialProof />
@@ -26,14 +28,22 @@ export default function LandingPage() {
       <Modal
         show={openAuthModal.open}
         popup
-        onClose={() => setOpenAuthModal({ open: false, isLogin: true })}
+        onClose={() =>
+          setOpenAuthModal({ open: false, isLogin: true, isLandlord: true })
+        }
       >
         <Modal.Body>
           <Modal.Header></Modal.Header>
           {openAuthModal.isLogin ? (
-            <Login setOpenAuthModal={setOpenAuthModal} isLandlord={true} />
+            <Login
+              setOpenAuthModal={setOpenAuthModal}
+              isLandlord={openAuthModal.isLandlord}
+            />
           ) : (
-            <SignUp setOpenAuthModal={setOpenAuthModal} />
+            <SignUp
+              setOpenAuthModal={setOpenAuthModal}
+              isLandlord={openAuthModal.isLandlord}
+            />
           )}
         </Modal.Body>
       </Modal>

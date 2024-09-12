@@ -5,7 +5,7 @@ import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import apiConnector from "../../ApiConnector/connector";
 import { toast } from "react-toastify";
 
-export default function SigUp({ setOpenAuthModal }) {
+export default function SigUp({ setOpenAuthModal, isLandlord }) {
   const {
     register,
     handleSubmit,
@@ -23,19 +23,35 @@ export default function SigUp({ setOpenAuthModal }) {
         // Signed in
         const user = userCredential.user;
         console.log(user);
-        apiConnector.Tenant.register({
-          email: data.email,
-          firstName: data.Name,
-          lastName: data.LastName,
-          idToken: user.accessToken,
-        }).then((response) => {
-          if (response.success === true) {
-            toast.success(response.message);
-            setOpenAuthModal(false);
-          } else {
-            toast.error(response.message);
-          }
-        });
+        if (!isLandlord) {
+          apiConnector.Tenant.register({
+            email: data.email,
+            firstName: data.Name,
+            lastName: data.LastName,
+            idToken: user.accessToken,
+          }).then((response) => {
+            if (response.success === true) {
+              toast.success(response.message);
+              setOpenAuthModal(false);
+            } else {
+              toast.error(response.message);
+            }
+          });
+        } else {
+          apiConnector.Landlord.register({
+            email: data.email,
+            firstName: data.Name,
+            lastName: data.LastName,
+            idToken: user.accessToken,
+          }).then((response) => {
+            if (response.success === true) {
+              toast.success(response.message);
+              setOpenAuthModal(false);
+            } else {
+              toast.error(response.message);
+            }
+          });
+        }
 
         // ...
       })
@@ -73,7 +89,7 @@ export default function SigUp({ setOpenAuthModal }) {
               d="M12 6v6m0 0v6m0-6h6m-6 0H6"
             ></path>
           </svg>
-          RentMinder
+          RentMinder {isLandlord ? "Landlord" : "Tenant"}
         </a>
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="p-2 space-y-4 md:space-y-6 sm:p-4">
@@ -360,4 +376,5 @@ export default function SigUp({ setOpenAuthModal }) {
 
 SigUp.propTypes = {
   setOpenAuthModal: PropTypes.func.isRequired,
+  isLandlord: PropTypes.bool,
 };
