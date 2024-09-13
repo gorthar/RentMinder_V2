@@ -1,6 +1,7 @@
 import heroImage from "../../assets/1.png";
+import Proptypes from "prop-types";
 
-function Hero() {
+function Hero({ setOpenAuthModal }) {
   return (
     <section className="  bg-gradient-to-l from-gray-200 via-emerald-100 to-amber-100 min-h-[50vh] flex items-center">
       <div className="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
@@ -15,6 +16,9 @@ function Hero() {
           </p>
           <a
             href="#"
+            onClick={() =>
+              setOpenAuthModal({ open: true, isLogin: false, isLandlord: true })
+            }
             className="inline-flex items-center justify-center px-5 py-3 mr-3 text-base font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900"
           >
             Get started
@@ -33,6 +37,9 @@ function Hero() {
           </a>
           <a
             href="#"
+            onClick={() =>
+              setOpenAuthModal({ open: true, isLogin: false, isLandlord: true })
+            }
             className="inline-flex items-center justify-center mb-2 sm:mt-0 px-5 py-3 text-base font-medium text-center text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-800"
           >
             Try free plan
@@ -46,3 +53,6 @@ function Hero() {
   );
 }
 export default Hero;
+Hero.propTypes = {
+  setOpenAuthModal: Proptypes.func,
+};

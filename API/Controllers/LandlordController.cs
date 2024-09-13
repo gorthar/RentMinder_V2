@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace API.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class LandlordController : ControllerBase
     {
