@@ -1,10 +1,27 @@
 import { createBrowserRouter } from "react-router-dom";
-import App from "../App";
+import RequireLandlord from "./RequireLandlord";
+import LandlordDashboard from "@/Pages/LandlordDashboard/LandlordDashboard";
+import LandingPage from "@/Pages/LandingPage/LandingPage";
+import App from "@/App";
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
-    children: [],
+    children: [
+      {
+        element: <RequireLandlord />,
+        children: [
+          {
+            path: "/landlord",
+            element: <LandlordDashboard />,
+          },
+        ],
+      },
+      {
+        path: "/",
+        element: <LandingPage />,
+      },
+    ],
   },
 ]);

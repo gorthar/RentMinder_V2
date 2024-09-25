@@ -2,6 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import { auth } from "../firebase";
 import { PropTypes } from "prop-types";
 import { onAuthStateChanged, signOut } from "firebase/auth";
+import { jwtDecode } from "jwt-decode";
 
 export const AuthContext = createContext();
 
@@ -10,7 +11,16 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+      if (!currentUser) {
+        setUser(null);
+        return;
+      }
+      const token = currentUser.accessToken;
+      const decodedToken = jwtDecode(token);
+      const userRole = decodedToken?.role;
+      const newUser = { ...currentUser, Role: userRole };
+      console.log(newUser);
+      setUser(newUser);
     });
     return () => {
       unsubscribe();
@@ -18,7 +28,6 @@ export function AuthProvider({ children }) {
   }, []);
 
   const logOut = () => {
-    setUser(null);
     return signOut(auth);
   };
 

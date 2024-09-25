@@ -1,12 +1,13 @@
 import { ToastContainer } from "react-toastify";
 import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
-import LandingPage from "./Pages/LandingPage/LandingPage";
+
+import { Outlet } from "react-router-dom";
 
 function App() {
   return (
     <div className="">
-      <LandingPage />
+      <Outlet />
       <ToastContainer
         position="bottom-right"
         autoClose={5000}
