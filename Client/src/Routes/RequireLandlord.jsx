@@ -1,6 +1,6 @@
 import { useAuthContext } from "@/Context/useAuthContext";
 import { Outlet } from "react-router-dom";
-import NotAuthorized from "./NotAuthorized";
+import NotAuthorized from "../Pages/AuthPages/NotAuthorized";
 
 function RequireLandlord() {
   const { user, logOut } = useAuthContext();

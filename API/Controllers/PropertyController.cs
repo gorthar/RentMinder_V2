@@ -74,7 +74,6 @@ public class PropertyController : ControllerBase
         existingProperty.NumberOfBedrooms = property.NumberOfBedrooms;
         existingProperty.NumberOfBathrooms = property.NumberOfBathrooms;
         existingProperty.SquareFootage = property.SquareFootage;
-        existingProperty.MonthlyRent = property.MonthlyRent;
         existingProperty.IsOccupied = property.IsOccupied;
         existingProperty.LastModified = DateTime.UtcNow;
 

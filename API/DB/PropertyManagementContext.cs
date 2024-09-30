@@ -48,10 +48,6 @@ namespace API.DB
                 .HasMaxLength(255);
 
             modelBuilder.Entity<Property>()
-                .Property(p => p.MonthlyRent)
-                .HasColumnType("decimal(18,2)");
-
-            modelBuilder.Entity<Property>()
                 .Property(p => p.SquareFootage)
                 .HasColumnType("decimal(18,2)");
 

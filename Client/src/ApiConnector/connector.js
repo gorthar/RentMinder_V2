@@ -93,10 +93,14 @@ const Landlord = {
   googleLogin: (googleUser) =>
     requests.post("/Landlord/google-login", googleUser),
 };
+const LandlordDashboard = {
+  getLandlordDasboard: () => requests.get("/Dashboard"),
+};
 
 const apiConnector = {
   Tenant,
   Landlord,
+  LandlordDashboard,
 };
 
 export default apiConnector;
