@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.DB.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class NewmigrationSettings : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -57,7 +57,6 @@ namespace API.DB.Migrations
                     NumberOfBedrooms = table.Column<int>(type: "integer", nullable: false),
                     NumberOfBathrooms = table.Column<int>(type: "integer", nullable: false),
                     SquareFootage = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
-                    MonthlyRent = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     IsOccupied = table.Column<bool>(type: "boolean", nullable: false),
                     DateAdded = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     LastModified = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),

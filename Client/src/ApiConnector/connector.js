@@ -77,11 +77,20 @@ axios.interceptors.response.use(
 );
 
 const requests = {
-  get: (url) => axios.get(url).then(responseBody),
+  get: (url, params) => axios.get(url, { params }).then(responseBody),
   post: (url, body) => axios.post(url, body).then(responseBody),
   put: (url, body) => axios.put(url, body).then(responseBody),
   del: (url) => axios.delete(url).then(responseBody),
 };
+
+const createPaginatedRequests = (endpoint) => ({
+  getAll: (page = 1, pageSize = 10) =>
+    requests.get(`${endpoint}`, { page, pageSize }),
+  getById: (id) => requests.get(`${endpoint}/${id}`),
+  create: (data) => requests.post(endpoint, data),
+  update: (id, data) => requests.put(`${endpoint}/${id}`, data),
+  delete: (id) => requests.del(`${endpoint}/${id}`),
+});
 
 const Tenant = {
   register: (tenant) => requests.post("/Tenant/register", tenant),
@@ -97,9 +106,18 @@ const LandlordDashboard = {
   getLandlordDasboard: () => requests.get("/Dashboard"),
 };
 
+const Property = createPaginatedRequests("/Property");
+
+const Lease = createPaginatedRequests("/Lease");
+
+const MaintenanceRequest = createPaginatedRequests("/MaintenanceRequest");
+
 const apiConnector = {
   Tenant,
   Landlord,
+  Property,
+  Lease,
+  MaintenanceRequest,
   LandlordDashboard,
 };
 

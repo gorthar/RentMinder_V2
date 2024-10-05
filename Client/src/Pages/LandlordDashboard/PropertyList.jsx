@@ -1,28 +1,104 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import usePaginatedQuery from "@/Utilities/usePaginatedQuery";
+
+import { useNavigate } from "react-router-dom";
 
 function PropertyList() {
+  const navigate = useNavigate();
+
+  const {
+    data: properties,
+    page,
+    totalPages,
+    goToNextPage,
+    goToPreviousPage,
+    isLoading,
+    isError,
+    error,
+    isFetching,
+  } = usePaginatedQuery("Property", 5);
+  console.log("Properties:", properties);
+
+  const handlePropertyClick = (id) => {
+    navigate(`/landlord/${id}`);
+  };
+
+  if (isError) return <div>Error loading properties: {error.message}</div>;
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Property List</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ul className="space-y-2">
-          <li className="flex justify-between items-center">
-            <span>123 Main St</span>
-            <span className="text-green-500">Occupied</span>
-          </li>
-          <li className="flex justify-between items-center">
-            <span>456 Elm St</span>
-            <span className="text-yellow-500">Pending Lease</span>
-          </li>
-          <li className="flex justify-between items-center">
-            <span>789 Oak St</span>
-            <span className="text-red-500">Vacant</span>
-          </li>
-        </ul>
-      </CardContent>
-    </Card>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Property List</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div>Loading properties...</div>
+          ) : (
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Address</TableHead>
+                    <TableHead>Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {properties.map((property) => (
+                    <TableRow
+                      key={property.id}
+                      onClick={() => handlePropertyClick(property.id)}
+                      className="cursor-pointer hover:bg-gray-100"
+                    >
+                      <TableCell>{property.address}</TableCell>
+                      <TableCell>
+                        <span
+                          className={
+                            property.isOccupied
+                              ? "text-green-500"
+                              : "text-red-500"
+                          }
+                        >
+                          {property.isOccupied ? "Occupied" : "Vacant"}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <div className="mt-4 flex justify-between items-center">
+                <Button
+                  onClick={goToPreviousPage}
+                  disabled={page === 1 || isFetching}
+                >
+                  Previous Page
+                </Button>
+                <span>
+                  Page {page} of {totalPages}
+                  {isFetching ? " (Updating...)" : ""}
+                </span>
+                <Button
+                  onClick={goToNextPage}
+                  disabled={page === totalPages || isFetching}
+                >
+                  Next Page
+                </Button>
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
+    </>
   );
 }
+
 export default PropertyList;

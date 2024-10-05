@@ -20,10 +20,8 @@ export default function Login({ setOpenAuthModal, isLandlord }) {
     const auth = getAuth();
     try {
       signInWithEmailAndPassword(auth, data.email, data.password)
-        .then((userCredential) => {
+        .then(() => {
           // Signed in
-          const _user = userCredential.user;
-          console.log(_user);
 
           toast.success("Logged in successfully");
 

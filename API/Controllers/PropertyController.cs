@@ -1,4 +1,5 @@
 using API.DB;
+using API.DTOs;
 using API.DTOs.Mappers;
 using API.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -20,14 +21,42 @@ public class PropertyController : ControllerBase
 
     [HttpGet]
     [Authorize(Roles = "Landlord")]
-    public async Task<ActionResult<IEnumerable<Property>>> GetProperties()
+    public async Task<ActionResult<PagedResult<PropertyDto>>> GetProperties([FromQuery] int page = 1, [FromQuery] int pageSize = 5)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var properties = await _context.Properties
+
+        var query = _context.Properties
             .Where(p => p.LandlordId == userId)
+            .AsNoTracking()
+            .Select(p => new PropertyDto
+            {
+                Id = p.Id,
+                Address = p.Address,
+                Description = p.Description,
+                NumberOfBedrooms = p.NumberOfBedrooms,
+                NumberOfBathrooms = p.NumberOfBathrooms,
+                SquareFootage = p.SquareFootage,
+                IsOccupied = p.IsOccupied,
+                DateAdded = p.DateAdded,
+                LastModified = p.LastModified,
+                LandlordId = p.LandlordId
+            });
+
+        var totalCount = await query.CountAsync();
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
-        return Ok(properties);
+
+        return Ok(new PagedResult<PropertyDto>
+        {
+            Items = items,
+            TotalCount = totalCount,
+            Page = page,
+            PageSize = pageSize
+        });
     }
+
 
     [HttpGet("{id}")]
     [Authorize(Roles = "Landlord")]
@@ -51,6 +80,8 @@ public class PropertyController : ControllerBase
         var newProperty = property.ToProperty();
         newProperty.LandlordId = userId;
         newProperty.DateAdded = DateTime.UtcNow;
+        newProperty.LastModified = DateTime.UtcNow;
+
 
         _context.Properties.Add(newProperty);
         await _context.SaveChangesAsync();
@@ -76,6 +107,7 @@ public class PropertyController : ControllerBase
         existingProperty.SquareFootage = property.SquareFootage;
         existingProperty.IsOccupied = property.IsOccupied;
         existingProperty.LastModified = DateTime.UtcNow;
+
 
         await _context.SaveChangesAsync();
 

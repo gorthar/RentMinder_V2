@@ -1,23 +1,79 @@
-import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Card } from "flowbite-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import usePaginatedQuery from "@/Utilities/usePaginatedQuery";
 
 function LeaseManagement() {
+  const {
+    data: leases,
+    page,
+    totalPages,
+    goToNextPage,
+    goToPreviousPage,
+    isLoading,
+    isError,
+    error,
+  } = usePaginatedQuery("Lease");
+
+  if (isLoading) return <div>Loading leases...</div>;
+  if (isError) return <div>Error loading leases: {error.message}</div>;
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Lease Management</CardTitle>
       </CardHeader>
       <CardContent>
-        <ul className="space-y-2">
-          <li className="flex justify-between items-center">
-            <span>John Doe - 123 Main St</span>
-            <span className="text-yellow-500">Expires in 30 days</span>
-          </li>
-          <li className="flex justify-between items-center">
-            <span>Jane Smith - 456 Elm St</span>
-            <span className="text-green-500">New Lease</span>
-          </li>
-        </ul>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Tenant</TableHead>
+              <TableHead>Property</TableHead>
+              <TableHead>Rent</TableHead>
+              <TableHead>Status</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {leases.map((lease) => (
+              <TableRow key={lease.id}>
+                <TableCell>{lease.tenantName}</TableCell>
+                <TableCell>{lease.propertyAddress}</TableCell>
+                <TableCell>${lease.monthlyRent}</TableCell>
+                <TableCell>
+                  <span
+                    className={
+                      lease.status === "Active"
+                        ? "text-green-500"
+                        : lease.status === "Expiring Soon"
+                        ? "text-yellow-500"
+                        : "text-red-500"
+                    }
+                  >
+                    {lease.status}
+                  </span>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        <div className="mt-4 flex justify-between items-center">
+          <Button onClick={goToPreviousPage} disabled={page === 1}>
+            Previous Page
+          </Button>
+          <span>
+            Page {page} of {totalPages}
+          </span>
+          <Button onClick={goToNextPage} disabled={page === totalPages}>
+            Next Page
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

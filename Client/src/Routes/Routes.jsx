@@ -4,6 +4,7 @@ import LandlordDashboard from "@/Pages/LandlordDashboard/LandlordDashboard";
 import LandingPage from "@/Pages/LandingPage/LandingPage";
 import App from "@/App";
 import LoggingOut from "@/Pages/AuthPages/LoggingOut";
+import PropertyDetails from "@/Pages/LandlordDashboard/PropertyDetails";
 
 export const router = createBrowserRouter([
   {
@@ -16,6 +17,10 @@ export const router = createBrowserRouter([
           {
             path: "/landlord",
             element: <LandlordDashboard />,
+          },
+          {
+            path: "/landlord/:propertyId",
+            element: <PropertyDetails />,
           },
         ],
       },

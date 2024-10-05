@@ -46,8 +46,9 @@ namespace API.Services
             var occupancyRate = CalculateOccupancyRate(properties);
             var occupancyRateLastMonth = CalculateOccupancyRate(propertiesLastMonth);
 
-            var maintenanceRequestCount = properties.Sum(x => x.MaintenanceRequests.Count);
-            var maintenanceRequestCountLastMonth = propertiesLastMonth.Sum(x => x.MaintenanceRequests.Count);
+            var maintenanceRequestCount = properties.Sum(x => x.MaintenanceRequests != null ? x.MaintenanceRequests.Count : 0);
+            var maintenanceRequestCountLastMonth = propertiesLastMonth.Sum(x => x.MaintenanceRequests != null ? x.MaintenanceRequests.Count : 0);
+
 
             return new DashboardSummary
             {

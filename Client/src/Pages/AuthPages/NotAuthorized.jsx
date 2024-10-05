@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { PropTypes } from "prop-types";
 
 function NotAuthorized({ message }) {
@@ -25,6 +25,9 @@ function NotAuthorized({ message }) {
 
       {/* Display extra message if passed */}
       {message && <p className="mt-4 text-red-500">{message}</p>}
+      <Link to="/" className="mt-4 text-blue-500 underline">
+        Go back to the home page now
+      </Link>
     </div>
   );
 }
