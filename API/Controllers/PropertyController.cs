@@ -60,16 +60,68 @@ public class PropertyController : ControllerBase
 
     [HttpGet("{id}")]
     [Authorize(Roles = "Landlord")]
-    public async Task<ActionResult<Property>> GetProperty(int id)
+    public async Task<ActionResult<PropertyDtoWithInfo>> GetProperty(int id)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var property = await _context.Properties
-            .FirstOrDefaultAsync(p => p.Id == id && p.LandlordId == userId);
+                            .Include(p => p.Leases).Where(p => p.Id == id)
+                            .FirstOrDefaultAsync(p => p.Id == id && p.LandlordId == userId);
+        var leaseQuery = _context.Leases
+                .Where(l => l.Property.LandlordId == userId && l.PropertyId == id)
+                .Select(l => new LeaseDto
+                {
+                    Id = l.Id,
+                    TenantName = l.Tenant.FirstName + " " + l.Tenant.LastName,
+                    PropertyAddress = l.Property.Address,
+                    StartDate = l.StartDate,
+                    EndDate = l.EndDate,
+                    MonthlyRent = l.MonthlyRent,
+                    SecurityDeposit = l.SecurityDeposit,
+                    Status = l.EndDate < DateTime.UtcNow ? "Expired" :
+                             l.EndDate < DateTime.UtcNow.AddMonths(1) ? "Expiring Soon" : "Active"
+                });
+
+
+
+        var maintenanceRequests = await _context.MaintenanceRequests
+            .Where(m => m.PropertyId == id)
+            .ToListAsync();
+        var rentPayments = _context.RentPayments
+            .Where(r => r.Lease.PropertyId == id)
+            .Select(r => new RentPaymentsDto
+            {
+                Id = r.Id,
+                Amount = r.Amount,
+                PaymentDate = r.PaymentDate,
+                LeaseId = r.LeaseId,
+                PaymentMethod = r.PaymentMethod,
+                TenantName = r.Lease.Tenant.FirstName + " " + r.Lease.Tenant.LastName
+            });
+
+
+
+        var inspections = await _context.Inspections
+            .Where(i => i.PropertyId == id)
+            .ToListAsync();
+
+        var leaseDtos = await leaseQuery.ToListAsync();
+        var rentPaymentsDto = await rentPayments.ToListAsync();
+
+        var propertyDtoWithInfo = new PropertyDtoWithInfo
+        {
+            Property = property.ToPropertyDto(),
+            Leases = leaseDtos,
+            MaintenanceRequests = maintenanceRequests.Select(m => m.ToMaintenanceRequestDto()).ToList(),
+            RentPayments = rentPaymentsDto,
+            Inspections = inspections
+
+
+        };
 
         if (property == null)
             return NotFound();
 
-        return Ok(property);
+        return Ok(propertyDtoWithInfo);
     }
 
     [HttpPost]

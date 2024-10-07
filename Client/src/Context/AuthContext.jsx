@@ -24,6 +24,7 @@ export function AuthProvider({ children }) {
       const userRole = decodedToken?.role;
       const newUser = { ...currentUser, Role: userRole };
       setUser(newUser);
+      console.log("User:", newUser);
       setLoading(false);
     });
 
@@ -38,9 +39,10 @@ export function AuthProvider({ children }) {
 
   if (loading) {
     return (
-      <div className="flex flex-row items-center justify-center h-screen">
+      <div className="flex items-center flex-col justify-center h-screen ">
         <Loader2 className="h-20 w-20 animate-spin" />
-        <h2 className="ml-4 text-xl">Loading...</h2>
+        <br />
+        <h2 className="mt-4 text-xl">Loading...</h2>
       </div>
     ); // Or any loading indicator
   }

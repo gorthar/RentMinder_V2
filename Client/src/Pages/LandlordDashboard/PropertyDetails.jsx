@@ -9,6 +9,7 @@ import {
   Calendar,
   Save,
   X,
+  Loader2,
 } from "lucide-react";
 import {
   Card,
@@ -39,14 +40,18 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { toast } from "react-toastify";
 import { useDashboardContext } from "@/Context/useDashboardContext";
 
+import AddLeaseModal from "./AddLeaseModal";
+
 export default function PropertyDetails() {
   const { propertyId } = useParams();
   const [isEditing, setIsEditing] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const fetchData = useCallback(async () => {
     const result = await apiConnector.Property.getById(propertyId);
     return result;
   }, [propertyId]);
-  const { invalidatePropertyList } = useDashboardContext();
+  const { invalidatePropertyList, invalidatePropertyDetails } =
+    useDashboardContext();
 
   const { data, isLoading } = useQuery({
     queryKey: ["PropertyDetail", propertyId],
@@ -61,11 +66,17 @@ export default function PropertyDetails() {
   const handleEdit = () => {
     setIsEditing(true);
   };
+  function handleOnClose() {
+    setIsOpen(false);
+  }
 
   async function handleSave() {
     setIsEditing(false);
     try {
-      await apiConnector.Property.update(propertyData.id, propertyData);
+      await apiConnector.Property.update(
+        propertyData.property.id,
+        propertyData.property
+      );
       invalidatePropertyList();
       setIsEditing(false);
       toast.success("Property updated successfully!");
@@ -83,15 +94,26 @@ export default function PropertyDetails() {
 
   useEffect(() => {
     setPropertyData(data);
+    console.log(data);
   }, [isLoading, data]);
 
-  if (!propertyData) return <div>Loading...</div>;
+  if (!propertyData)
+    return (
+      <div className="flex items-center flex-col justify-center h-screen ">
+        <Loader2 className="h-20 w-20 animate-spin" />
+        <br />
+        <h2 className="mt-4 text-xl">Loading...</h2>
+      </div>
+    );
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setPropertyData((prevData) => ({
       ...prevData,
-      [name]: value,
+      property: {
+        ...prevData.property,
+        [name]: value,
+      },
     }));
   };
 
@@ -99,9 +121,16 @@ export default function PropertyDetails() {
     const { name, checked } = e.target;
     setPropertyData((prevData) => ({
       ...prevData,
-      [name]: checked,
+      property: {
+        ...prevData.property,
+        [name]: checked,
+      },
     }));
   };
+
+  function onLeaseAdded() {
+    invalidatePropertyDetails(data.id);
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -143,7 +172,7 @@ export default function PropertyDetails() {
                 <Input
                   id="address"
                   name="address"
-                  value={propertyData.address}
+                  value={propertyData.property.address}
                   onChange={handleInputChange}
                   className="mb-2"
                 />
@@ -151,14 +180,16 @@ export default function PropertyDetails() {
                 <Textarea
                   id="description"
                   name="description"
-                  value={propertyData.description}
+                  value={propertyData.property.description}
                   onChange={handleInputChange}
                 />
               </div>
             ) : (
               <>
-                <CardTitle>{propertyData.address}</CardTitle>
-                <CardDescription>{propertyData.description}</CardDescription>
+                <CardTitle>{propertyData.property.address}</CardTitle>
+                <CardDescription>
+                  {propertyData.property.description}
+                </CardDescription>
               </>
             )}
           </CardHeader>
@@ -170,12 +201,12 @@ export default function PropertyDetails() {
                   <Input
                     type="number"
                     name="numberOfBedrooms"
-                    value={propertyData.numberOfBedrooms}
+                    value={propertyData.property.numberOfBedrooms}
                     onChange={handleInputChange}
                     className="w-20"
                   />
                 ) : (
-                  <span>{propertyData.numberOfBedrooms} Bedrooms</span>
+                  <span>{propertyData.property.numberOfBedrooms} Bedrooms</span>
                 )}
               </div>
               <div className="flex items-center">
@@ -184,12 +215,14 @@ export default function PropertyDetails() {
                   <Input
                     type="number"
                     name="numberOfBathrooms"
-                    value={propertyData.numberOfBathrooms}
+                    value={propertyData.property.numberOfBathrooms}
                     onChange={handleInputChange}
                     className="w-20"
                   />
                 ) : (
-                  <span>{propertyData.numberOfBathrooms} Bathrooms</span>
+                  <span>
+                    {propertyData.property.numberOfBathrooms} Bathrooms
+                  </span>
                 )}
               </div>
               <div className="flex items-center">
@@ -198,12 +231,12 @@ export default function PropertyDetails() {
                   <Input
                     type="number"
                     name="squareFootage"
-                    value={propertyData.squareFootage}
+                    value={propertyData.property.squareFootage}
                     onChange={handleInputChange}
                     className="w-24"
                   />
                 ) : (
-                  <span>{propertyData.squareFootage} sq ft</span>
+                  <span>{propertyData.property.squareFootage} sq ft</span>
                 )}
               </div>
             </div>
@@ -216,7 +249,7 @@ export default function PropertyDetails() {
                   <input
                     type="checkbox"
                     name="isOccupied"
-                    checked={propertyData.isOccupied}
+                    checked={propertyData.property.isOccupied}
                     onChange={handleCheckboxChange}
                     className="mr-2"
                   />
@@ -224,23 +257,28 @@ export default function PropertyDetails() {
                 </label>
               ) : (
                 <Badge
-                  variant={propertyData.isOccupied ? "default" : "secondary"}
+                  variant={
+                    propertyData.property.isOccupied ? "default" : "secondary"
+                  }
                 >
-                  {propertyData.isOccupied ? "Occupied" : "Vacant"}
+                  {propertyData.property.isOccupied ? "Occupied" : "Vacant"}
                 </Badge>
               )}
             </div>
             <div className="flex items-center text-sm text-muted-foreground">
               <Calendar className="mr-2 h-4 w-4" />
               <span>
-                Added: {new Date(propertyData.dateAdded).toLocaleDateString()}
+                Added:{" "}
+                {new Date(propertyData.property.dateAdded).toLocaleDateString()}
               </span>
             </div>
             <div className="flex items-center text-sm text-muted-foreground">
               <Calendar className="mr-2 h-4 w-4" />
               <span>
                 Modified:{" "}
-                {new Date(propertyData.lastModified).toLocaleDateString()}
+                {new Date(
+                  propertyData.property.lastModified
+                ).toLocaleDateString()}
               </span>
             </div>
           </CardFooter>
@@ -257,7 +295,9 @@ export default function PropertyDetails() {
           </CardContent>
         </Card>
       </div>
-
+      <Button className="mt-6" onClick={() => setIsOpen(true)}>
+        Add Lease
+      </Button>
       <Tabs defaultValue="leases" className="mt-6">
         <ScrollArea>
           <TabsList>
@@ -285,6 +325,7 @@ export default function PropertyDetails() {
                       <TableHead>End Date</TableHead>
                       <TableHead>Monthly Rent</TableHead>
                       <TableHead>Security Deposit</TableHead>
+                      <TableHead>Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -301,6 +342,15 @@ export default function PropertyDetails() {
                         <TableCell>
                           ${lease.securityDeposit.toFixed(2)}
                         </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              lease.status === "Active" ? "" : "destructive"
+                            }
+                          >
+                            {lease.status}
+                          </Badge>
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -315,7 +365,7 @@ export default function PropertyDetails() {
               <CardTitle>Payment History</CardTitle>
             </CardHeader>
             <CardContent>
-              {!data.leases || !data.leases.rentPayments ? (
+              {data.rentPayments.length === 0 ? (
                 <h2>No payment found</h2>
               ) : (
                 <Table>
@@ -328,18 +378,16 @@ export default function PropertyDetails() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {data.leases.flatMap((lease) =>
-                      lease.rentPayments.map((payment) => (
-                        <TableRow key={payment.id}>
-                          <TableCell>
-                            {new Date(payment.paymentDate).toLocaleDateString()}
-                          </TableCell>
-                          <TableCell>${payment.amount.toFixed(2)}</TableCell>
-                          <TableCell>{payment.paymentMethod}</TableCell>
-                          <TableCell>{lease.tenantName}</TableCell>
-                        </TableRow>
-                      ))
-                    )}
+                    {data.rentPayments.map((payment) => (
+                      <TableRow key={payment.id}>
+                        <TableCell>
+                          {new Date(payment.paymentDate).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>${payment.amount.toFixed(2)}</TableCell>
+                        <TableCell>{payment.paymentMethod}</TableCell>
+                        <TableCell>{payment.tenantName}</TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               )}
@@ -352,7 +400,7 @@ export default function PropertyDetails() {
               <CardTitle>Maintenance Requests</CardTitle>
             </CardHeader>
             <CardContent>
-              {!data.maintenanceRequests ? (
+              {data.maintenanceRequests.length === 0 ? (
                 <h2>No maintenance requests found</h2>
               ) : (
                 data.maintenanceRequests.map((request) => (
@@ -375,7 +423,7 @@ export default function PropertyDetails() {
               <CardTitle>Inspection History</CardTitle>
             </CardHeader>
             <CardContent>
-              {!data.inspections ? (
+              {data.inspections.length === 0 ? (
                 <h2>No inspections found</h2>
               ) : (
                 data.inspections.map((inspection) => (
@@ -393,6 +441,12 @@ export default function PropertyDetails() {
           </Card>
         </TabsContent>
       </Tabs>
+      <AddLeaseModal
+        isOpen={isOpen}
+        onClose={handleOnClose}
+        propertyId={propertyId}
+        onLeaseAdded={onLeaseAdded}
+      />
     </div>
   );
 }

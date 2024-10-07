@@ -89,25 +89,35 @@ namespace API.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Landlord")]
-        public async Task<ActionResult<LeaseDto>> CreateLease(LeaseDto lease)
+        public async Task<ActionResult<NewLeaseDto>> CreateLease(NewLeaseDto lease)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var property = await _context.Properties
-                .Where(p => p.LandlordId == userId)
+                .Where(p => p.Id == lease.PropertyId && p.LandlordId == userId)
                 .FirstOrDefaultAsync();
-
             if (property == null)
             {
-                return BadRequest("Landlord does not own any properties");
+                return BadRequest($"Property does not exist or does not belong to you");
             }
+
+            var tenant = await _context.Tenants
+                .Where(t => t.Email == lease.TenantEmail)
+                .FirstOrDefaultAsync();
+            if (tenant == null)
+            {
+                return BadRequest("Tenant does not exist");
+            }
+
+
 
             var newLease = new Lease
             {
-                TenantId = lease.TenantId,
+                TenantId = tenant.FirebaseUserId,
                 PropertyId = property.Id,
-                StartDate = lease.StartDate,
-                EndDate = lease.EndDate,
-                MonthlyRent = lease.MonthlyRent
+                StartDate = lease.StartDate.UtcDateTime,
+                EndDate = lease.EndDate.UtcDateTime,
+                MonthlyRent = lease.MonthlyRent,
+                SecurityDeposit = lease.SecurityDeposit
             };
 
             _context.Leases.Add(newLease);

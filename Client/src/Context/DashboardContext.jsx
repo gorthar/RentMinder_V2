@@ -11,8 +11,16 @@ export function DashboardProvider({ children }) {
     queryClient.invalidateQueries(["Property"]);
   }, [queryClient]);
 
+  const invalidatePropertyDetails = useCallback(
+    (propertyId) => {
+      queryClient.invalidateQueries(["Property", propertyId]);
+    },
+    [queryClient]
+  );
+
   const value = {
     invalidatePropertyList,
+    invalidatePropertyDetails,
   };
 
   return (
