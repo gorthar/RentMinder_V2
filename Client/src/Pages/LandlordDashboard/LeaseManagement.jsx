@@ -24,6 +24,7 @@ function LeaseManagement() {
 
   if (isLoading) return <div>Loading leases...</div>;
   if (isError) return <div>Error loading leases: {error.message}</div>;
+  console.log(`Lease pages: ${page} of ${totalPages}`);
 
   return (
     <Card>

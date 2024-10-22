@@ -44,7 +44,7 @@ function NavbarButtons({ user, setOpenAuthModal, handleLogout }) {
           <button
             onClick={() => {
               user.Role === "Tenant"
-                ? navigate("/tenant")
+                ? navigate("/tenant/dashboard")
                 : navigate("/landlord");
             }}
             className="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-2 lg:px-5 py-2 lg:py-2.5 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"

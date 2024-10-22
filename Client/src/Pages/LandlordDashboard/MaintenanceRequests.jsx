@@ -25,6 +25,9 @@ function MaintenanceRequests() {
   if (isLoading) return <div>Loading maintenance requests...</div>;
   if (isError)
     return <div>Error loading maintenance requests: {error.message}</div>;
+  console.log("Requests:", requests);
+  console.log("Page:", page);
+  console.log("Total Pages:", totalPages);
 
   return (
     <Card>
@@ -75,7 +78,7 @@ function MaintenanceRequests() {
           <span>
             Page {page} of {totalPages}
           </span>
-          <Button onClick={goToNextPage} disabled={page === totalPages}>
+          <Button onClick={goToNextPage} disabled={page >= totalPages}>
             Next Page
           </Button>
         </div>

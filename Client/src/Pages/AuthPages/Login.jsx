@@ -33,6 +33,7 @@ export default function Login({ setOpenAuthModal, isLandlord }) {
             navigate("/landlord");
           } else {
             // redirect to tenant dashboard
+            navigate("/tenant/dashboard");
           }
         })
         .catch((error) => {

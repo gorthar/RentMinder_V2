@@ -5,6 +5,9 @@ import LandingPage from "@/Pages/LandingPage/LandingPage";
 import App from "@/App";
 import LoggingOut from "@/Pages/AuthPages/LoggingOut";
 import PropertyDetails from "@/Pages/LandlordDashboard/PropertyDetails";
+import RequireTenant from "./RequireTenant";
+import TenantDashboard from "@/Pages/TenantDashboard/TenantDashboard";
+import TenantLayout from "@/Pages/TenantDashboard/TenantLayout";
 
 export const router = createBrowserRouter([
   {
@@ -21,6 +24,21 @@ export const router = createBrowserRouter([
           {
             path: "/landlord/:propertyId",
             element: <PropertyDetails />,
+          },
+        ],
+      },
+      {
+        path: "/tenant",
+        element: <RequireTenant />,
+        children: [
+          {
+            element: <TenantLayout />,
+            children: [
+              {
+                path: "/tenant/dashboard",
+                element: <TenantDashboard />,
+              },
+            ],
           },
         ],
       },
