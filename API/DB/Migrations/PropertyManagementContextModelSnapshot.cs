@@ -183,9 +183,6 @@ namespace API.DB.Migrations
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<decimal>("MonthlyRent")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<int>("NumberOfBathrooms")
                         .HasColumnType("integer");
 

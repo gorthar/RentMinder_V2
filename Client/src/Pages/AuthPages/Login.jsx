@@ -4,8 +4,8 @@ import { useForm } from "react-hook-form";
 import { PropTypes } from "prop-types";
 import GoogleLoginButton from "../../SharedComponents/GoogleLoginButton";
 import { useState } from "react";
-import { useAuthContext } from "../../Context/useAuthContext";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function Login({ setOpenAuthModal, isLandlord }) {
   const {
@@ -14,24 +14,26 @@ export default function Login({ setOpenAuthModal, isLandlord }) {
     formState: { errors },
   } = useForm();
   const [error, setError] = useState(null);
-  const { setUser } = useAuthContext();
+  const navigate = useNavigate();
 
   function onLoginFormSubmit(data) {
     const auth = getAuth();
     try {
       signInWithEmailAndPassword(auth, data.email, data.password)
-        .then((userCredential) => {
+        .then(() => {
           // Signed in
-          const _user = userCredential.user;
-          console.log(_user);
+
           toast.success("Logged in successfully");
-          setUser(_user);
+
           setOpenAuthModal({ open: false, isLogin: true });
           // TODO redirect to tenant or landlord dashboard
+          console.log(isLandlord);
           if (isLandlord) {
             // redirect to landlord dashboard
+            navigate("/landlord");
           } else {
             // redirect to tenant dashboard
+            navigate("/tenant/dashboard");
           }
         })
         .catch((error) => {

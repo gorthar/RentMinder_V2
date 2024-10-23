@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.DB.Migrations
 {
     [DbContext(typeof(PropertyManagementContext))]
-    [Migration("20240817190711_Initial Migration")]
-    partial class InitialMigration
+    [Migration("20241002221345_New migration Settings")]
+    partial class NewmigrationSettings
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -185,9 +185,6 @@ namespace API.DB.Migrations
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<decimal>("MonthlyRent")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("NumberOfBathrooms")
                         .HasColumnType("integer");

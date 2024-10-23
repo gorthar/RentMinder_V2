@@ -23,8 +23,6 @@ namespace API.Entities
 
         public decimal SquareFootage { get; set; }
 
-        public decimal MonthlyRent { get; set; }
-
         public bool IsOccupied { get; set; }
 
         public DateTime DateAdded { get; set; }

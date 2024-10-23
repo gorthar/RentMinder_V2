@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,8 +13,10 @@ namespace API.Entities
         public DateTime StartDate { get; set; }
 
         public DateTime EndDate { get; set; }
+        [Column(TypeName = "decimal(18, 2)")]
 
         public decimal MonthlyRent { get; set; }
+        [Column(TypeName = "decimal(18, 2)")]
 
         public decimal SecurityDeposit { get; set; }
 

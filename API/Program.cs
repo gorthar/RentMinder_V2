@@ -31,6 +31,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddSingleton<FirebaseService>();
 builder.Services.AddScoped<IUserService, TenantService>();
 builder.Services.AddScoped<IUserService, LandlordService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -103,5 +104,18 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+var scope = app.Services.CreateScope();
+var context = scope.ServiceProvider.GetRequiredService<PropertyManagementContext>();
+var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+try
+{
+    await context.Database.MigrateAsync();
+    await DbInitializer.InitDb(context);
+}
+catch (Exception ex)
+{
+    logger.LogError(ex, "An error occurred seeding the DB.");
+}
 
 app.Run();
