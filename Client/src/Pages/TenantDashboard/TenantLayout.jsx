@@ -31,7 +31,7 @@ export default function TenantLayout() {
       <SideBar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       <main className="flex-1 overflow-y-auto">
         <Header onLogout={handleLogout} toggleSidebar={toggleSidebar} />
-        <div className="max-w-7xl mx-2 sm:mx-0 py-6 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-2 sm:mx-auto py-6 sm:px-6 lg:px-8">
           <Outlet />
         </div>
       </main>

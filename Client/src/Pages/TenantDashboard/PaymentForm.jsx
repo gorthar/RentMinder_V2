@@ -21,9 +21,24 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { DatePicker } from "./DatePicker";
-import { DollarSign } from "lucide-react";
+
+import { CalendarIcon, DollarSign } from "lucide-react";
 import { toast } from "react-toastify";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
 
 export const PaymentForm = () => {
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false);
@@ -31,6 +46,7 @@ export const PaymentForm = () => {
     defaultValues: {
       amount: "",
       paymentDate: new Date(),
+      paymentMethod: "",
     },
   });
 
@@ -47,14 +63,15 @@ export const PaymentForm = () => {
       <CardHeader>
         <CardTitle className="flex items-center">
           <DollarSign className="w-5 h-5 mr-2" />
-          Pay Rent
+          Make a Payment
         </CardTitle>
-        <CardDescription>Submit your monthly rent payment</CardDescription>
+        <CardDescription>
+          Submit a new payment for rent or other fees
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Amount Field */}
             <FormField
               control={form.control}
               name="amount"
@@ -71,16 +88,75 @@ export const PaymentForm = () => {
                 </FormItem>
               )}
             />
-            {/* Payment Date Field */}
             <FormField
               control={form.control}
               name="paymentDate"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Payment Date</FormLabel>
-                  <DatePicker field={field} />
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) =>
+                          date < new Date() || date < new Date("1900-01-01")
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <FormDescription>
                     Choose the date for your payment
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="paymentMethod"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Payment Method</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select payment method" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="credit_card">Credit Card</SelectItem>
+                      <SelectItem value="bank_transfer">
+                        Bank Transfer
+                      </SelectItem>
+                      <SelectItem value="paypal">PayPal</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Choose your preferred payment method
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
