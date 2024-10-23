@@ -12,7 +12,6 @@ export const SideBar = ({ sidebarOpen, setSidebarOpen }) => {
   ];
   const trigger = useRef(null);
   const sidebar = useRef(null);
-  const location = window.location.pathname;
 
   useEffect(() => {
     const clickHandler = ({ target }) => {
@@ -63,17 +62,15 @@ export const SideBar = ({ sidebarOpen, setSidebarOpen }) => {
         </div>
       </div>
       <nav className="mt-6">
-        {menuItems.map((item, index) => (
+        {menuItems.map((item) => (
           <NavLink
             key={item.text}
             to={`/tenant/${item.text.toLowerCase()}`}
-            className={`flex items-center px-4 py-2 ${
-              index > 0 ? "mt-2" : ""
-            } text-gray-600 ${
-              location.includes(item.text.toLowerCase())
-                ? "bg-gray-200"
-                : "hover:bg-gray-200"
-            }`}
+            className={({ isActive }) =>
+              `flex items-center py-2 px-4 text-gray-800 transition-all ease-in-out ${
+                isActive ? "bg-gray-50 scale-125 translate-x-10" : ""
+              }`
+            }
           >
             <item.icon className="w-5 h-5 mr-3" />
             {item.text}

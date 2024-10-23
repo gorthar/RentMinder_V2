@@ -9,6 +9,7 @@ import RequireTenant from "./RequireTenant";
 import TenantDashboard from "@/Pages/TenantDashboard/TenantDashboard";
 import TenantLayout from "@/Pages/TenantDashboard/TenantLayout";
 import TenantPayments from "@/Pages/TenantDashboard/TenantPayments/TenantPayments";
+import TenantMaintenance from "@/Pages/TenantDashboard/TenantMaintenance/TenantMaintenance";
 
 export const router = createBrowserRouter([
   {
@@ -42,6 +43,10 @@ export const router = createBrowserRouter([
               {
                 path: "/tenant/payments",
                 element: <TenantPayments />,
+              },
+              {
+                path: "/tenant/maintenance",
+                element: <TenantMaintenance />,
               },
             ],
           },
