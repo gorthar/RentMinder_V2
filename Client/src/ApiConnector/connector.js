@@ -105,12 +105,17 @@ const Landlord = {
 const LandlordDashboard = {
   getLandlordDasboard: () => requests.get("/Dashboard"),
 };
+const TenantDashboard = {
+  getTenantDashboard: () => requests.get("/TenantDashboard"),
+};
 
 const Property = createPaginatedRequests("/Property");
 
 const Lease = createPaginatedRequests("/Lease");
 
 const MaintenanceRequest = createPaginatedRequests("/MaintenanceRequest");
+
+const Payment = createPaginatedRequests("/Payment");
 
 const apiConnector = {
   Tenant,
@@ -119,6 +124,8 @@ const apiConnector = {
   Lease,
   MaintenanceRequest,
   LandlordDashboard,
+  TenantDashboard,
+  Payment,
 };
 
 export default apiConnector;

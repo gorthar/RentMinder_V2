@@ -32,6 +32,7 @@ builder.Services.AddSingleton<FirebaseService>();
 builder.Services.AddScoped<IUserService, TenantService>();
 builder.Services.AddScoped<IUserService, LandlordService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<ITenantDashboardService, TenantDashboardService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

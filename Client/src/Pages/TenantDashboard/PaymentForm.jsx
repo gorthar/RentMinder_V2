@@ -39,9 +39,11 @@ import {
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
+import apiConnector from "@/ApiConnector/connector";
 
 export const PaymentForm = () => {
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false);
+
   const form = useForm({
     defaultValues: {
       amount: "",
@@ -50,13 +52,18 @@ export const PaymentForm = () => {
     },
   });
 
-  const onSubmit = (data) => {
+  async function onSubmit(data) {
+    await apiConnector.Payment.create({
+      amount: parseFloat(data.amount),
+      leaseId: data.paymentDate,
+      paymentMethod: data.paymentMethod,
+    });
     toast({
       title: "Payment Submitted",
       description: `Your payment of $${data.amount} has been submitted.`,
     });
     setIsPaymentSuccessful(true);
-  };
+  }
 
   return (
     <Card className="shadow-lg">

@@ -11,7 +11,6 @@ export const Header = ({ onLogout }) => {
   const [HeaderText, setHeaderText] = useState("Dashboard");
   const location = useLocation();
   const { user } = useAuthContext();
-  console.log("User:", user);
 
   useEffect(() => {
     if (location.pathname.includes("maintenance")) {

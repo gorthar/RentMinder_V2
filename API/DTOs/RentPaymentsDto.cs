@@ -13,6 +13,7 @@ namespace API.DTOs
         public decimal Amount { get; set; }
         public string PaymentMethod { get; set; }
         public string TenantName { get; set; }
+        public string PropertyAddress { get; set; }
 
     }
 }

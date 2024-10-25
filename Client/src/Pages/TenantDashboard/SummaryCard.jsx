@@ -12,14 +12,16 @@ export const SummaryCard = ({ title, icon: Icon, items }) => {
       </CardHeader>
       <CardContent>
         <ul className="space-y-2">
-          {items.map((item, index) => (
-            <li key={index} className="flex justify-between items-center">
-              <span>{item.label}</span>
-              <span className={`font-semibold ${item.statusClass || ""}`}>
-                {item.value}
-              </span>
-            </li>
-          ))}
+          {items.length < 1
+            ? "No activity yet"
+            : items.map((item, index) => (
+                <li key={index} className="flex justify-between items-center">
+                  <span>{item.label}</span>
+                  <span className={`font-semibold ${item.statusClass || ""}`}>
+                    {item.value}
+                  </span>
+                </li>
+              ))}
         </ul>
       </CardContent>
     </Card>
