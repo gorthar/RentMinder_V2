@@ -22,7 +22,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetDashboardSummary()
+        public async Task<ActionResult<TenantDashboardSummary>> GetDashboardSummary()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var dashboardSummary = await _tenantDashboardService.GetDashboardSummaryAsync(userId);
