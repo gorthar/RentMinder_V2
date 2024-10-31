@@ -12,15 +12,6 @@ export default function TenantDashboard() {
     queryFn: apiConnector.TenantDashboard.getTenantDashboard,
   });
   console.log(data);
-  async function getTenantDashboard() {
-    try {
-      const response = await apiConnector.TenantDashboard.getTenantDashboard();
-      return response.data;
-    } catch (error) {
-      throw new Error(error.response.data);
-    }
-  }
-  console.log(getTenantDashboard());
 
   function formatString(str, length = 15) {
     return str.length > length ? `${str.substring(0, 15)}...` : str;

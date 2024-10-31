@@ -101,7 +101,7 @@ namespace API.Controllers
                 return BadRequest("Invalid property ID");
             }
 
-
+            maintenanceRequestDto.DateSubmitted = DateTime.UtcNow;
             var maintenanceRequest = maintenanceRequestDto.ToMaintenanceRequest();
 
             _context.MaintenanceRequests.Add(maintenanceRequest);

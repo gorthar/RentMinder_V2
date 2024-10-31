@@ -12,7 +12,7 @@ namespace API.DTOs
 
         public List<RentPaymentsDto> RecentTransactions { get; set; }
         public List<UpcomingPayment> UpcomingPayments { get; set; }
-        public List<NewLeaseDto> ActiveLeases { get; set; }
+        public List<TenantLeaseDto> ActiveLeases { get; set; }
         public List<MaintenanceRequestDto> RecentMaintenanceRequests { get; set; }
     }
 }

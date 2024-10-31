@@ -25,16 +25,21 @@ namespace API.Services
 
             var leases = await _context.Leases
                         .Where(l => l.TenantId == userId)
-                        .Select(l => l.ToLeaseDto())
+                        .Select(l => l.ToTenantLeaseDto())
                         .ToListAsync();
 
             var propertiesQuery = _context.Properties
                                   .Where(p => p.Leases.Any(l => l.TenantId == userId));
             var properties = await propertiesQuery.ToListAsync();
 
+            foreach (var lease in leases)
+            {
+                lease.PropertyAddress = properties.First(p => p.Id == lease.PropertyId).Address;
+            }
+
             var upcomingPayments = leases.Select(l => new UpcomingPayment
             {
-                LeaseId = l.Id,
+                LeaseId = l.leaseId,
                 PropertyAddress = properties.First(p => p.Id == l.PropertyId).Address,
                 PaymentDueDate = DateTime.Now.Month < 12 ? new DateTime(DateTime.Now.Year, DateTime.Now.Month + 1, 1) : new DateTime(DateTime.Now.Year + 1, 1, 1),
                 PaymentAmount = l.MonthlyRent

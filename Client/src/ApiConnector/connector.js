@@ -114,6 +114,9 @@ const Property = createPaginatedRequests("/Property");
 const Lease = createPaginatedRequests("/Lease");
 
 const MaintenanceRequest = createPaginatedRequests("/MaintenanceRequest");
+const TenantMaintenanceRequest = createPaginatedRequests(
+  "/MaintenanceRequest/tenant"
+);
 
 const Payment = createPaginatedRequests("/Payment");
 
@@ -125,6 +128,7 @@ const apiConnector = {
   MaintenanceRequest,
   LandlordDashboard,
   TenantDashboard,
+  TenantMaintenanceRequest,
   Payment,
 };
 

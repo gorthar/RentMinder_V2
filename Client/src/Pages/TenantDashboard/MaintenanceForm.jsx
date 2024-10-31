@@ -15,10 +15,20 @@ import {
 import { IssueTypeField } from "./Fields/IssueTypeField";
 import { DescriptionField } from "./Fields/DescriptionField";
 import { UrgencyField } from "./Fields/UrgencyField";
+import apiConnector from "@/ApiConnector/connector";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 export const MaintenanceForm = () => {
   const [isRequestSubmitted, setIsRequestSubmitted] = useState(false);
+  const [requestError, setRequestError] = useState(false);
+
+  const { data } = useQuery({
+    queryKey: ["tenantDashboard"],
+    queryFn: apiConnector.TenantDashboard.getTenantDashboard,
+  });
+
+  console.log("tenant Data from maintenance form", data);
   const form = useForm({
     defaultValues: {
       issueType: "",
@@ -27,12 +37,27 @@ export const MaintenanceForm = () => {
     },
   });
 
-  const onSubmit = (data) => {
-    toast({
-      title: "Maintenance Request Submitted",
-      description: `Your ${data.urgency} request for ${data.issueType} has been submitted.`,
+  const onSubmit = (formData) => {
+    const result = apiConnector.TenantMaintenanceRequest.create({
+      PropertyId: data.activeLeases[0].propertyId,
+      PropertyAddress: data.activeLeases[0].propertyAddress,
+      description: formData.description,
+      status: "Received",
     });
-    setIsRequestSubmitted(true);
+    if (result) {
+      toast(
+        `Your ${formData.urgency} request for ${formData.issueType} has been submitted.`,
+        {
+          theme: "light",
+        }
+      );
+
+      setIsRequestSubmitted(true);
+      setRequestError(false);
+    } else {
+      setIsRequestSubmitted(false);
+      setRequestError(true);
+    }
   };
 
   return (
@@ -60,6 +85,13 @@ export const MaintenanceForm = () => {
         <CardFooter>
           <p className="text-green-600">
             Maintenance request submitted successfully!
+          </p>
+        </CardFooter>
+      )}
+      {requestError && (
+        <CardFooter>
+          <p className="text-red-600">
+            An error occured while submitting the form. Try again later
           </p>
         </CardFooter>
       )}

@@ -47,9 +47,9 @@ SummaryCard.propTypes = {
   icon: PropTypes.elementType.isRequired,
   items: PropTypes.arrayOf(
     PropTypes.shape({
-      label: PropTypes.string.isRequired,
-      value: PropTypes.string.isRequired,
+      label: PropTypes.string,
+      value: PropTypes.string,
       statusClass: PropTypes.string,
     })
-  ).isRequired,
+  ),
 };
