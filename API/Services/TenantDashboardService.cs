@@ -66,9 +66,7 @@ namespace API.Services
             var activeMaintenanceRequests = await _context.MaintenanceRequests
                                             .Where(m =>
                                                 m.Property.Leases.Any(l =>
-                                                    l.TenantId == userId &&
-                                                    l.StartDate <= currentDate &&
-                                                    l.EndDate >= currentDate) &&
+                                                    l.TenantId == userId) &&
                                                 m.DateResolved == null &&
                                                 m.Status != "Completed")
                                             .OrderByDescending(m => m.DateSubmitted)
