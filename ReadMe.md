@@ -27,7 +27,7 @@ RentMinderV2 is a property management application designed to help landlords man
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 - [Node.js](https://nodejs.org/) (version 14 or higher)
 - [PostgreSQL](https://www.postgresql.org/)
-- [Docker]
+- [Docker](https://www.docker.com/products/docker-desktop/)
   
 
 ### Backend (API)
