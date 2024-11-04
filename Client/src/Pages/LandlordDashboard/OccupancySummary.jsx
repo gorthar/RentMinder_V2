@@ -19,7 +19,8 @@ function OccupancySummary({ occupancyRate }) {
       <CardContent>
         <div className="text-2xl font-bold">{occupancyRateThisMonth}%</div>
         <p className="text-xs text-muted-foreground">
-          +{occupancyRateIncreasePercentage}% from last month
+          {occupancyRateIncreasePercentage > 0 ? "+" : ""}
+          {occupancyRateIncreasePercentage.toFixed(1)}% from last month
         </p>
       </CardContent>
     </Card>

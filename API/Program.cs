@@ -7,12 +7,29 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+var isLocalDb = true;
+
+string connectionString = isLocalDb ? builder.Configuration.GetConnectionString("local") : builder.Configuration["SupaConn1"];
+
+
 // Add services to the container.
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<PropertyManagementContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseNpgsql(connectionString,
+        npgsqlOptionsAction: sqlOptions =>
+        {
+            sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 3,
+                maxRetryDelay: TimeSpan.FromSeconds(30),
+                errorCodesToAdd: null);
+            sqlOptions.CommandTimeout(30);
+            // Add this line for detailed error messages
+            sqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+        }
+    );
 });
 
 var corsPolicy = "CorsPolicy";
@@ -111,12 +128,28 @@ var context = scope.ServiceProvider.GetRequiredService<PropertyManagementContext
 var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 try
 {
+    logger.LogInformation("Testing database connection...");
+    await context.Database.CanConnectAsync();
+    logger.LogInformation("Database connection successful");
+
+    // Then proceed with migrations
+    logger.LogInformation("Running migrations...");
     await context.Database.MigrateAsync();
+
+    // Finally initialize data
+    logger.LogInformation("Initializing database...");
     await DbInitializer.InitDb(context);
+
+    logger.LogInformation("Database initialization completed successfully");
+}
+catch (Npgsql.NpgsqlException ex)
+{
+    logger.LogError(ex, "Error connecting to the database. Please check your connection string and ensure the database is accessible.");
+    throw;
 }
 catch (Exception ex)
 {
-    logger.LogError(ex, "An error occurred seeding the DB.");
+    logger.LogError(ex, "An error occurred while initializing the database");
+    throw;
 }
-
 app.Run();

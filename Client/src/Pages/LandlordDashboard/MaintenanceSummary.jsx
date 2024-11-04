@@ -20,7 +20,7 @@ function MaintenanceSummary({ maintenanceRequestCount }) {
           {maintenanceRequestCountThisMonth}
         </div>
         <p className="text-xs text-muted-foreground">
-          {maintenanceRequestCountIncrease} from last week
+          {maintenanceRequestCountIncrease} from last month
         </p>
       </CardContent>
     </Card>

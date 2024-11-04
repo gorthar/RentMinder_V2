@@ -14,6 +14,7 @@ namespace API.DB
         {
         }
 
+
         public DbSet<Landlord> Landlords { get; set; }
         public DbSet<Tenant> Tenants { get; set; }
         public DbSet<Property> Properties { get; set; }
