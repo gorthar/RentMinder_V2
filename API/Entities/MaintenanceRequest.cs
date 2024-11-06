@@ -17,8 +17,8 @@ namespace API.Entities
         public DateTime? DateResolved { get; set; }
 
         public string Status { get; set; }
+        public string Urgency { get; set; }
         [Column(TypeName = "decimal(18, 2)")]
-
         public decimal? Cost { get; set; }
 
         public int PropertyId { get; set; }

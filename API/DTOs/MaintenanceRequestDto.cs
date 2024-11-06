@@ -12,6 +12,7 @@ namespace API.DTOs
         public string Description { get; set; }
         public DateTime DateSubmitted { get; set; }
         public string Status { get; set; }
+        public string Urgency { get; set; }
         public int PropertyId { get; set; }
 
     }
