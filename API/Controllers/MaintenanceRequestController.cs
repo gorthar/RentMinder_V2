@@ -36,7 +36,8 @@ namespace API.Controllers
                     PropertyAddress = m.Property.Address,
                     Description = m.Description,
                     DateSubmitted = m.DateSubmitted,
-                    Status = m.Status
+                    Status = m.Status,
+                    Urgency = m.Urgency
                 });
 
             var totalCount = await query.CountAsync();
