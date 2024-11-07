@@ -24,12 +24,12 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Landlord")]
+        [Authorize]
         public async Task<ActionResult<PagedResult<MaintenanceRequestDto>>> GetMaintenanceRequests([FromQuery] int page = 1, [FromQuery] int pageSize = 5)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var query = _context.MaintenanceRequests
-                .Where(m => m.Property.LandlordId == userId)
+                .Where(m => m.Property.LandlordId == userId || m.Property.Leases.Any(l => l.TenantId == userId))
                 .Select(m => new MaintenanceRequestDto
                 {
                     Id = m.Id,
