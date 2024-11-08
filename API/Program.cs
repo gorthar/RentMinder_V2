@@ -8,7 +8,7 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 
-var isLocalDb = true;
+var isLocalDb = false;
 
 string connectionString = isLocalDb ? builder.Configuration.GetConnectionString("local") : builder.Configuration["SupaConn1"];
 
@@ -120,6 +120,10 @@ app.UseCors(corsPolicy);
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
+app.MapFallbackToController("Index", "Fallback");
 
 app.MapControllers();
 

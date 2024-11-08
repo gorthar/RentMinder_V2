@@ -293,6 +293,6 @@ msbuild.wrn
 firebase.json
 firebase.js
 
-
+wwwroot/
 
 # End of https://www.toptal.com/developers/gitignore/api/node,visualstudiocode,windows,macos,linux,test
