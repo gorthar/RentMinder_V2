@@ -13,6 +13,7 @@ var isLocalDb = false;
 string connectionString = isLocalDb ? builder.Configuration.GetConnectionString("local") : builder.Configuration["SupaConn1"];
 
 
+
 // Add services to the container.
 
 builder.Services.AddControllers();

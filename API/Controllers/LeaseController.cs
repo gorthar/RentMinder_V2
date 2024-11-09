@@ -46,6 +46,7 @@ namespace API.Controllers
             var items = await query
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
+                .AsNoTracking()
                 .ToListAsync();
 
             return Ok(new PagedResult<LeaseDto>
@@ -77,6 +78,7 @@ namespace API.Controllers
                     Status = l.EndDate < DateTime.Now ? "Expired" :
                              l.EndDate < DateTime.Now.AddMonths(1) ? "Expiring Soon" : "Active"
                 })
+                .AsNoTracking()
                 .FirstOrDefaultAsync();
 
             if (lease == null)

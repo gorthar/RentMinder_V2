@@ -58,6 +58,7 @@ namespace API.Services
                                         LeaseId = p.LeaseId,
                                         PropertyAddress = p.Lease.Property.Address
                                     })
+                                    .AsNoTracking()
                                     .ToListAsync();
 
             var currentDate = DateTime.UtcNow;
