@@ -29,7 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DollarSign } from "lucide-react";
+import { DollarSign, Loader2 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import apiConnector from "@/ApiConnector/connector";
 
@@ -79,8 +79,8 @@ export const PaymentForm = () => {
   if (isLoading) {
     return (
       <Card className="shadow-lg">
-        <CardContent className="p-6">
-          <div className="text-center">Loading payment form...</div>
+        <CardContent className="h-full flex items-center justify-center">
+          <Loader2 className="mx-auto animate-spin" />
         </CardContent>
       </Card>
     );
