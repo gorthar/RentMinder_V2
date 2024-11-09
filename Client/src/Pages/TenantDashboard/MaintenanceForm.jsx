@@ -16,7 +16,7 @@ import { IssueTypeField } from "./Fields/IssueTypeField";
 import { DescriptionField } from "./Fields/DescriptionField";
 import { UrgencyField } from "./Fields/UrgencyField";
 import apiConnector from "@/ApiConnector/connector";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 export const MaintenanceForm = () => {
@@ -27,6 +27,8 @@ export const MaintenanceForm = () => {
     queryKey: ["tenantDashboard"],
     queryFn: apiConnector.TenantDashboard.getTenantDashboard,
   });
+  const queryClient = useQueryClient();
+  const location = window.location.href;
 
   console.log("tenant Data from maintenance form", data);
   const form = useForm({
@@ -51,6 +53,9 @@ export const MaintenanceForm = () => {
           theme: "light",
         }
       );
+      if (location.includes("maintenance")) {
+        queryClient.invalidateQueries("MaintenanceRequest");
+      } else queryClient.invalidateQueries("tenantDashboard");
 
       setIsRequestSubmitted(true);
       setRequestError(false);

@@ -1,4 +1,4 @@
-import { Home, DollarSign, Wrench as Tool, Bell } from "lucide-react";
+import { Home, DollarSign, Wrench as Tool } from "lucide-react";
 import { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { NavLink } from "react-router-dom";
@@ -8,7 +8,6 @@ export const SideBar = ({ sidebarOpen, setSidebarOpen }) => {
     { icon: Home, text: "Dashboard" },
     { icon: DollarSign, text: "Payments" },
     { icon: Tool, text: "Maintenance" },
-    { icon: Bell, text: "Notifications" },
   ];
   const trigger = useRef(null);
   const sidebar = useRef(null);

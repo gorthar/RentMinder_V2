@@ -30,7 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DollarSign } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import apiConnector from "@/ApiConnector/connector";
 
 const formSchema = z.object({
@@ -46,6 +46,8 @@ export const PaymentForm = () => {
     queryKey: ["tenantDashboard"],
     queryFn: apiConnector.TenantDashboard.getTenantDashboard,
   });
+  const queryClient = useQueryClient();
+  const location = window.location.href;
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -66,6 +68,9 @@ export const PaymentForm = () => {
 
       setIsPaymentSuccessful(true);
       form.reset();
+      if (location.includes("payments")) {
+        queryClient.invalidateQueries("Payment");
+      } else queryClient.invalidateQueries("tenantDashboard");
     } catch (error) {
       console.error("Payment submission failed:", error);
     }
