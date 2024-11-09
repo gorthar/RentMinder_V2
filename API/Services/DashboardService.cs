@@ -36,6 +36,10 @@ namespace API.Services
             var propertyCount = properties.Count;
             var propertyCountLastMonth = propertiesLastMonth.Count;
 
+            var MaintenanceRequests = await _context.MaintenanceRequests
+                .Where(x => x.Property.Landlord.FirebaseUserId == userId && x.Status != "Completed")
+                .ToListAsync();
+
             var rentPayments = await _context.RentPayments
                 .Where(x => x.Lease.Property.Landlord.FirebaseUserId == userId)
                 .ToListAsync();
@@ -46,8 +50,8 @@ namespace API.Services
             var occupancyRate = CalculateOccupancyRate(properties);
             var occupancyRateLastMonth = CalculateOccupancyRate(propertiesLastMonth);
 
-            var maintenanceRequestCount = properties.Sum(x => x.MaintenanceRequests != null ? x.MaintenanceRequests.Count : 0);
-            var maintenanceRequestCountLastMonth = propertiesLastMonth.Sum(x => x.MaintenanceRequests != null ? x.MaintenanceRequests.Count : 0);
+            var maintenanceRequestCount = MaintenanceRequests.Count;
+            var maintenanceRequestCountLastMonth = MaintenanceRequests.Count(x => x.DateSubmitted <= lastMonthDate);
 
 
             return new DashboardSummary
