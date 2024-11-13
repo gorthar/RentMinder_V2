@@ -15,12 +15,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import usePaginatedQuery from "@/Utilities/usePaginatedQuery";
+
 import { format } from "date-fns";
 import { Calendar, CheckCircle, Clock, FileText, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import usePaginatedQueryWithOptions from "@/Utilities/usePaginatedQueryWithOptions";
+import { useQueryClient } from "@tanstack/react-query";
 
-function MaintenanceTable() {
+function MaintenanceTable({ propertyId }) {
+  const queryClient = useQueryClient();
+  if (!propertyId) {
+    const cachedData = queryClient.getQueryData(["tenantDashboard"]);
+    if (!cachedData) {
+      return <div>Loading...</div>; // or handle missing data case
+    }
+    propertyId = cachedData.activeLeases[0].propertyId;
+  }
+  const options = { id: propertyId, initialPageSize: 5 };
   const {
     data: maintenanceHistory,
     page,
@@ -31,7 +42,7 @@ function MaintenanceTable() {
     isError,
     error,
     isFetching,
-  } = usePaginatedQuery("MaintenanceRequest", 5);
+  } = usePaginatedQueryWithOptions("MaintenanceRequest", options);
   console.log(maintenanceHistory);
 
   if (isLoading) {
@@ -72,7 +83,7 @@ function MaintenanceTable() {
   }
   return (
     <>
-      <Card className="mt-6 shadow-lg">
+      <Card className="mt-2 shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center">
             <FileText className="w-5 h-5 mr-2" />

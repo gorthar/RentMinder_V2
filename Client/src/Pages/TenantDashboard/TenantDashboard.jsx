@@ -10,6 +10,9 @@ export default function TenantDashboard() {
   const { isLaoding, data, error } = useQuery({
     queryKey: ["tenantDashboard"],
     queryFn: apiConnector.TenantDashboard.getTenantDashboard,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    staleTime: 2 * 60 * 1000, // 2 minutes
   });
   console.log(data);
 

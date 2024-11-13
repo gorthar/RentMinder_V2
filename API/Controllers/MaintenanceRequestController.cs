@@ -54,6 +54,37 @@ namespace API.Controllers
                 PageSize = pageSize
             });
         }
+        [HttpGet("MaintenanceRequest/")]
+        [Authorize]
+        public async Task<ActionResult<PagedResult<MaintenanceRequestDto>>> GetMaintenanceRequestsByPropertyId([FromQuery] int Id, [FromQuery] int page = 1, [FromQuery] int pageSize = 5)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var query = _context.MaintenanceRequests
+                .Where(m => m.Property.LandlordId == userId || m.Property.Leases.Any(l => l.TenantId == userId) && m.PropertyId == Id)
+                .Select(m => new MaintenanceRequestDto
+                {
+                    Id = m.Id,
+                    PropertyAddress = m.Property.Address,
+                    Description = m.Description,
+                    DateSubmitted = m.DateSubmitted,
+                    Status = m.Status,
+                    Urgency = m.Urgency
+                });
+
+            var totalCount = await query.CountAsync();
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return Ok(new PagedResult<MaintenanceRequestDto>
+            {
+                Items = items,
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize
+            });
+        }
         [HttpGet("{id}")]
         [Authorize]
         public async Task<ActionResult<MaintenanceRequestDto>> GetMaintenanceRequest(int id)
@@ -139,6 +170,26 @@ namespace API.Controllers
                 Page = page,
                 PageSize = pageSize
             });
+        }
+
+        [HttpPut("{id}")]
+        [Authorize]
+        public async Task<ActionResult> UpdateMaintenanceRequest(int id, MaintenanceRequestDto maintenanceRequestDto)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var maintenanceRequest = await _context.MaintenanceRequests.FindAsync(id);
+            if (maintenanceRequest == null || maintenanceRequest.Property.LandlordId != userId && maintenanceRequest.Property.Leases.All(l => l.TenantId != userId))
+            {
+                return NotFound();
+            }
+
+            maintenanceRequest.Description = maintenanceRequestDto.Description;
+            maintenanceRequest.Status = maintenanceRequestDto.Status;
+            maintenanceRequest.Urgency = maintenanceRequestDto.Urgency;
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }

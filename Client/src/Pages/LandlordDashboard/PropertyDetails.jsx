@@ -41,6 +41,7 @@ import { toast } from "react-toastify";
 import { useDashboardContext } from "@/Context/useDashboardContext";
 
 import AddLeaseModal from "./AddLeaseModal";
+import MaintenanceTable from "@/SharedComponents/MaintenanceTable";
 
 export default function PropertyDetails() {
   const { propertyId } = useParams();
@@ -395,27 +396,7 @@ export default function PropertyDetails() {
           </Card>
         </TabsContent>
         <TabsContent value="maintenance">
-          <Card>
-            <CardHeader>
-              <CardTitle>Maintenance Requests</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {data.maintenanceRequests.length === 0 ? (
-                <h2>No maintenance requests found</h2>
-              ) : (
-                data.maintenanceRequests.map((request) => (
-                  <div key={request.id} className="mb-4">
-                    <h3 className="font-semibold">{request.description}</h3>
-                    <p>Status: {request.status}</p>
-                    <p>
-                      Submitted:{" "}
-                      {new Date(request.dateSubmitted).toLocaleDateString()}
-                    </p>
-                  </div>
-                ))
-              )}
-            </CardContent>
-          </Card>
+          <MaintenanceTable propertyId={propertyId} />
         </TabsContent>
         <TabsContent value="inspections">
           <Card>

@@ -86,6 +86,8 @@ const requests = {
 const createPaginatedRequests = (endpoint) => ({
   getAll: (page = 1, pageSize = 10) =>
     requests.get(`${endpoint}`, { page, pageSize }),
+  getAllById: (Id, page = 1, pageSize = 10) =>
+    requests.get(`${endpoint}${endpoint}`, { Id, page, pageSize }),
   getById: (id) => requests.get(`${endpoint}/${id}`),
   create: (data) => requests.post(endpoint, data),
   update: (id, data) => requests.put(`${endpoint}/${id}`, data),
@@ -114,9 +116,6 @@ const Property = createPaginatedRequests("/Property");
 const Lease = createPaginatedRequests("/Lease");
 
 const MaintenanceRequest = createPaginatedRequests("/MaintenanceRequest");
-const TenantMaintenanceRequest = createPaginatedRequests(
-  "/MaintenanceRequest/tenant"
-);
 
 const Payment = createPaginatedRequests("/Payment");
 
@@ -128,7 +127,6 @@ const apiConnector = {
   MaintenanceRequest,
   LandlordDashboard,
   TenantDashboard,
-  TenantMaintenanceRequest,
   Payment,
 };
 
