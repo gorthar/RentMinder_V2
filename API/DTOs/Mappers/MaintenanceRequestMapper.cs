@@ -18,7 +18,8 @@ namespace API.DTOs.Mappers
                 DateSubmitted = maintenanceRequest.DateSubmitted,
                 Status = maintenanceRequest.Status,
                 PropertyId = maintenanceRequest.PropertyId,
-                Urgency = maintenanceRequest.Urgency
+                Urgency = maintenanceRequest.Urgency,
+                Cost = maintenanceRequest.Cost
 
             };
         }
@@ -32,7 +33,8 @@ namespace API.DTOs.Mappers
                 DateSubmitted = maintenanceRequestDto.DateSubmitted,
                 Status = maintenanceRequestDto.Status,
                 PropertyId = maintenanceRequestDto.PropertyId,
-                Urgency = maintenanceRequestDto.Urgency
+                Urgency = maintenanceRequestDto.Urgency,
+                Cost = maintenanceRequestDto.Cost
             };
         }
     }

@@ -10,6 +10,7 @@ import TenantDashboard from "@/Pages/TenantDashboard/TenantDashboard";
 import TenantLayout from "@/Pages/TenantDashboard/TenantLayout";
 import TenantPayments from "@/Pages/TenantDashboard/TenantPayments/TenantPayments";
 import TenantMaintenance from "@/Pages/TenantDashboard/TenantMaintenance/TenantMaintenance";
+import MaintenanceDetails from "@/SharedComponents/MaintenanceDetails";
 
 export const router = createBrowserRouter([
   {
@@ -26,6 +27,10 @@ export const router = createBrowserRouter([
           {
             path: "/landlord/:propertyId",
             element: <PropertyDetails />,
+          },
+          {
+            path: "/landlord/maintenance/:maintenanceId",
+            element: <MaintenanceDetails />,
           },
         ],
       },
@@ -47,6 +52,10 @@ export const router = createBrowserRouter([
               {
                 path: "/tenant/maintenance",
                 element: <TenantMaintenance />,
+              },
+              {
+                path: "/tenant/maintenance/:maintenanceId",
+                element: <MaintenanceDetails />,
               },
             ],
           },

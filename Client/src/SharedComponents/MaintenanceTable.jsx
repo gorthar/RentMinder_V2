@@ -21,10 +21,13 @@ import { Calendar, CheckCircle, Clock, FileText, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import usePaginatedQueryWithOptions from "@/Utilities/usePaginatedQueryWithOptions";
 import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 function MaintenanceTable({ propertyId }) {
   const queryClient = useQueryClient();
-  if (!propertyId) {
+  const navigate = useNavigate();
+  const isTanent = window.location.pathname.includes("tenant");
+  if (!propertyId && isTanent) {
     const cachedData = queryClient.getQueryData(["tenantDashboard"]);
     if (!cachedData) {
       return <div>Loading...</div>; // or handle missing data case
@@ -42,6 +45,7 @@ function MaintenanceTable({ propertyId }) {
     isError,
     error,
     isFetching,
+    // eslint-disable-next-line react-hooks/rules-of-hooks
   } = usePaginatedQueryWithOptions("MaintenanceRequest", options);
   console.log(maintenanceHistory);
 
@@ -81,6 +85,9 @@ function MaintenanceTable({ propertyId }) {
       </Card>
     );
   }
+  function handleClick(id) {
+    navigate(`/${isTanent ? "tenant" : "landlord"}/maintenance/${id}`);
+  }
   return (
     <>
       <Card className="mt-2 shadow-lg">
@@ -106,7 +113,13 @@ function MaintenanceTable({ propertyId }) {
             </TableHeader>
             <TableBody>
               {maintenanceHistory.map((request) => (
-                <TableRow key={request.id}>
+                <TableRow
+                  key={request.id}
+                  onClick={() => {
+                    handleClick(request.id);
+                  }}
+                  className="cursor-pointer"
+                >
                   <TableCell>
                     {
                       // time format 2024-10-30T23:25:54.667818Z request.dateSubmitted

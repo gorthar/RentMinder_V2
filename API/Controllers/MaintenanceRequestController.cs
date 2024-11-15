@@ -68,7 +68,8 @@ namespace API.Controllers
                     Description = m.Description,
                     DateSubmitted = m.DateSubmitted,
                     Status = m.Status,
-                    Urgency = m.Urgency
+                    Urgency = m.Urgency,
+                    Cost = m.Cost
                 });
 
             var totalCount = await query.CountAsync();
@@ -90,10 +91,34 @@ namespace API.Controllers
         public async Task<ActionResult<MaintenanceRequestDto>> GetMaintenanceRequest(int id)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var maintenanceRequest = await _context.MaintenanceRequests.FindAsync(id);
-            if (maintenanceRequest == null || maintenanceRequest.Property.LandlordId != userId)
+            if (string.IsNullOrEmpty(userId))
             {
-                return NotFound();
+                return Unauthorized("User not authenticated");
+            }
+
+            var maintenanceRequest = await _context.MaintenanceRequests
+                .Include(m => m.Property)
+                .Include(m => m.Property.Leases)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (maintenanceRequest == null)
+            {
+                return NotFound("Maintenance request not found");
+            }
+
+            if (maintenanceRequest.Property == null)
+            {
+                return NotFound("Associated property not found");
+            }
+
+            // Check if user is either the landlord or a tenant of the property
+            bool isLandlord = maintenanceRequest.Property.LandlordId == userId;
+            bool isTenant = maintenanceRequest.Property.Leases != null &&
+                            maintenanceRequest.Property.Leases.Any(l => l.TenantId == userId);
+
+            if (!isLandlord && !isTenant)
+            {
+                return Unauthorized("You don't have permission to view this maintenance request");
             }
 
             return maintenanceRequest.ToMaintenanceRequestDto();
@@ -177,7 +202,10 @@ namespace API.Controllers
         public async Task<ActionResult> UpdateMaintenanceRequest(int id, MaintenanceRequestDto maintenanceRequestDto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var maintenanceRequest = await _context.MaintenanceRequests.FindAsync(id);
+            var maintenanceRequest = await _context.MaintenanceRequests.
+                Include(m => m.Property)
+                .Include(m => m.Property.Leases)
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (maintenanceRequest == null || maintenanceRequest.Property.LandlordId != userId && maintenanceRequest.Property.Leases.All(l => l.TenantId != userId))
             {
                 return NotFound();
@@ -186,6 +214,8 @@ namespace API.Controllers
             maintenanceRequest.Description = maintenanceRequestDto.Description;
             maintenanceRequest.Status = maintenanceRequestDto.Status;
             maintenanceRequest.Urgency = maintenanceRequestDto.Urgency;
+            maintenanceRequest.Cost = maintenanceRequestDto.Cost;
+            maintenanceRequest.DateResolved = maintenanceRequestDto.Status == "Resolved" ? DateTime.UtcNow : (DateTime?)null;
 
             await _context.SaveChangesAsync();
 
