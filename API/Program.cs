@@ -8,7 +8,7 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 
-var isLocalDb = true;
+var isLocalDb = false;
 
 string connectionString = isLocalDb ? builder.Configuration.GetConnectionString("local") : builder.Configuration["SupaConn1"];
 
@@ -47,8 +47,17 @@ builder.Services.AddCors(options =>
 
 
 builder.Services.AddSingleton<FirebaseService>();
-builder.Services.AddScoped<IUserService, TenantService>();
-builder.Services.AddScoped<IUserService, LandlordService>();
+builder.Services.AddScoped<TenantService>();
+builder.Services.AddScoped<LandlordService>();
+builder.Services.AddScoped<Func<string, IUserService>>(serviceProvider => key =>
+{
+    return key switch
+    {
+        "Tenant" => serviceProvider.GetService<TenantService>(),
+        "Landlord" => serviceProvider.GetService<LandlordService>(),
+        _ => throw new KeyNotFoundException()
+    };
+});
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<ITenantDashboardService, TenantDashboardService>();
 

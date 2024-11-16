@@ -15,6 +15,15 @@ export default function TenantDashboard() {
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
   console.log(data);
+  if (!data) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <h2 className="mt-4 text-lg">
+          No active leases found. Please contact your landlord.
+        </h2>
+      </div>
+    );
+  }
 
   function formatString(str, length = 15) {
     return str.length > length ? `${str.substring(0, 15)}...` : str;
@@ -72,7 +81,16 @@ export default function TenantDashboard() {
       </div>
     );
   }
-  console.log(data);
+
+  if (data.activeLeases.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <h2 className="mt-4 text-lg">
+          No active leases found. Please contact your landlord.
+        </h2>
+      </div>
+    );
+  }
 
   return (
     <div>

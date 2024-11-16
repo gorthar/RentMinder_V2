@@ -180,6 +180,7 @@ export default function Login({ setOpenAuthModal, isLandlord }) {
                 <GoogleLoginButton
                   setOpenAuthModal={setOpenAuthModal}
                   upIn={"in"}
+                  isLandlord={isLandlord}
                 />
               </div>
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">

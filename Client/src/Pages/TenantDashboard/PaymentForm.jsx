@@ -97,6 +97,17 @@ export const PaymentForm = () => {
       </Card>
     );
   }
+  if (data.activeLeases.length === 0) {
+    return (
+      <Card className="shadow-lg">
+        <CardContent className="p-6">
+          <div className="text-red-600">
+            No active leases found. Please contact your landlord.
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="shadow-lg">

@@ -17,10 +17,10 @@ namespace API.Controllers
         private readonly ILogger<LandlordController> _logger;
         private readonly IUserService _landlordService;
 
-        public LandlordController(ILogger<LandlordController> logger, IUserService landlordService)
+        public LandlordController(ILogger<LandlordController> logger, Func<string, IUserService> userServiceFactory)
         {
             _logger = logger;
-            _landlordService = landlordService;
+            _landlordService = userServiceFactory("Landlord");
         }
 
         [HttpPost("google-login")]

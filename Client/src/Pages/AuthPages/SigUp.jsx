@@ -112,7 +112,11 @@ export default function SigUp({ setOpenAuthModal, isLandlord }) {
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
               Create an account
             </h1>
-            <GoogleLoginButton setOpenAuthModal={setOpenAuthModal} upIn="Up" />
+            <GoogleLoginButton
+              setOpenAuthModal={setOpenAuthModal}
+              upIn="Up"
+              isLandlord={isLandlord}
+            />
             <div className="flex items-center justify-center space-x-2">
               <div className="h-px bg-gray-300 dark:bg-gray-700 w-full"></div>
               <span className="font-normal text-gray-400 dark:text-gray-500">

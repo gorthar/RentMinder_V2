@@ -38,6 +38,9 @@ export const MaintenanceForm = () => {
       urgency: "",
     },
   });
+  if (!data) {
+    return <div>Loading...</div>;
+  }
 
   const onSubmit = (formData) => {
     const result = apiConnector.TenantMaintenanceRequest.create({
@@ -64,6 +67,23 @@ export const MaintenanceForm = () => {
       setRequestError(true);
     }
   };
+
+  if (data.activeLeases.length === 0) {
+    return (
+      <Card className="shadow-lg">
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Tool className="w-5 h-5 mr-2" />
+            Maintenance Request
+          </CardTitle>
+          <CardDescription>
+            You do not have any active leases. Please contact your landlord to
+            renew your lease.
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
 
   return (
     <Card className="shadow-lg">

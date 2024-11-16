@@ -32,6 +32,21 @@ function MaintenanceTable({ propertyId }) {
     if (!cachedData) {
       return <div>Loading...</div>; // or handle missing data case
     }
+    if (!cachedData.activeLeases.length) {
+      return (
+        <Card className="mt-3">
+          <CardHeader>
+            <CardTitle>Maintenance Request History</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>
+              No maintenance requests found. You need to have an active lease to
+              view maintenance requests.
+            </CardDescription>
+          </CardContent>
+        </Card>
+      );
+    }
     propertyId = cachedData.activeLeases[0].propertyId;
   }
   const options = { id: propertyId, initialPageSize: 5 };
