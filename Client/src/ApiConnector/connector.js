@@ -3,7 +3,12 @@ import { toast } from "react-toastify";
 import { globalNavigate } from "../Utilities/globalNavigator";
 import { auth } from "../firebase";
 
-axios.defaults.baseURL = import.meta.env.VITE_API_URL;
+const isProduction = import.meta.env.PROD;
+
+axios.defaults.baseURL = isProduction
+  ? "https://naw6cequtcz2jxtyifzuhlbfxq0zutiw.lambda-url.us-west-2.on.aws/api"
+  : import.meta.env.VITE_API_URL;
+
 axios.defaults.withCredentials = true;
 
 function responseBody(response) {
@@ -86,6 +91,8 @@ const requests = {
 const createPaginatedRequests = (endpoint) => ({
   getAll: (page = 1, pageSize = 10) =>
     requests.get(`${endpoint}`, { page, pageSize }),
+  getAllById: (Id, page = 1, pageSize = 10) =>
+    requests.get(`${endpoint}${endpoint}`, { Id, page, pageSize }),
   getById: (id) => requests.get(`${endpoint}/${id}`),
   create: (data) => requests.post(endpoint, data),
   update: (id, data) => requests.put(`${endpoint}/${id}`, data),
@@ -105,12 +112,17 @@ const Landlord = {
 const LandlordDashboard = {
   getLandlordDasboard: () => requests.get("/Dashboard"),
 };
+const TenantDashboard = {
+  getTenantDashboard: () => requests.get("/TenantDashboard"),
+};
 
 const Property = createPaginatedRequests("/Property");
 
 const Lease = createPaginatedRequests("/Lease");
 
 const MaintenanceRequest = createPaginatedRequests("/MaintenanceRequest");
+
+const Payment = createPaginatedRequests("/Payment");
 
 const apiConnector = {
   Tenant,
@@ -119,6 +131,8 @@ const apiConnector = {
   Lease,
   MaintenanceRequest,
   LandlordDashboard,
+  TenantDashboard,
+  Payment,
 };
 
 export default apiConnector;

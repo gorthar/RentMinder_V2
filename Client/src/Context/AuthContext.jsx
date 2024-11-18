@@ -11,30 +11,37 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(undefined);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (!currentUser) {
-        setUser(null);
-        setLoading(false);
-        return;
-      }
-
-      const token = currentUser.accessToken;
-      const decodedToken = jwtDecode(token);
-      const userRole = decodedToken?.role;
-      const newUser = { ...currentUser, Role: userRole };
-      setUser(newUser);
-      console.log("User:", newUser);
+  const updateUserWithToken = async (currentUser) => {
+    if (!currentUser) {
+      setUser(null);
       setLoading(false);
-    });
+      return;
+    }
 
-    return () => {
-      unsubscribe();
-    };
+    const token = await currentUser.getIdToken();
+    const decodedToken = jwtDecode(token);
+    const userRole = decodedToken?.role;
+    const newUser = { ...currentUser, Role: userRole };
+    setUser(newUser);
+    console.log("User updated:", newUser);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, updateUserWithToken);
+    return () => unsubscribe();
   }, []);
 
   const logOut = () => {
     return signOut(auth);
+  };
+
+  // Add a method to force update user
+  const refreshUser = async () => {
+    if (auth.currentUser) {
+      setLoading(true);
+      await updateUserWithToken(auth.currentUser);
+    }
   };
 
   if (loading) {
@@ -44,16 +51,16 @@ export function AuthProvider({ children }) {
         <br />
         <h2 className="mt-4 text-xl">Loading...</h2>
       </div>
-    ); // Or any loading indicator
+    );
   }
 
   return (
-    <AuthContext.Provider value={{ user, setUser, logOut }}>
+    <AuthContext.Provider value={{ user, setUser, logOut, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
 AuthProvider.propTypes = {
-  children: PropTypes.node,
+  children: PropTypes.node.isRequired,
 };

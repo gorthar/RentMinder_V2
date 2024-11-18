@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import RequireLandlord from "./RequireLandlord";
 import LandlordDashboard from "@/Pages/LandlordDashboard/LandlordDashboard";
 import LandingPage from "@/Pages/LandingPage/LandingPage";
@@ -9,6 +9,9 @@ import RequireTenant from "./RequireTenant";
 import TenantDashboard from "@/Pages/TenantDashboard/TenantDashboard";
 import TenantLayout from "@/Pages/TenantDashboard/TenantLayout";
 import TenantPayments from "@/Pages/TenantDashboard/TenantPayments/TenantPayments";
+import TenantMaintenance from "@/Pages/TenantDashboard/TenantMaintenance/TenantMaintenance";
+import MaintenanceDetails from "@/SharedComponents/MaintenanceDetails";
+import NotFoundPage from "@/Pages/NotFoundPage";
 
 export const router = createBrowserRouter([
   {
@@ -25,6 +28,10 @@ export const router = createBrowserRouter([
           {
             path: "/landlord/:propertyId",
             element: <PropertyDetails />,
+          },
+          {
+            path: "/landlord/maintenance/:maintenanceId",
+            element: <MaintenanceDetails />,
           },
         ],
       },
@@ -43,6 +50,14 @@ export const router = createBrowserRouter([
                 path: "/tenant/payments",
                 element: <TenantPayments />,
               },
+              {
+                path: "/tenant/maintenance",
+                element: <TenantMaintenance />,
+              },
+              {
+                path: "/tenant/maintenance/:maintenanceId",
+                element: <MaintenanceDetails />,
+              },
             ],
           },
         ],
@@ -54,6 +69,14 @@ export const router = createBrowserRouter([
       {
         path: "/logout",
         element: <LoggingOut />,
+      },
+      {
+        path: "not-found",
+        element: <NotFoundPage />,
+      },
+      {
+        path: "*",
+        element: <Navigate replace to="/not-found" />,
       },
     ],
   },

@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
   Form,
@@ -12,7 +14,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
 import {
   Card,
   CardContent,
@@ -21,9 +22,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-import { CalendarIcon, DollarSign } from "lucide-react";
-import { toast } from "react-toastify";
 import {
   Select,
   SelectContent,
@@ -31,32 +29,85 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
+import { DollarSign, Loader2 } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import apiConnector from "@/ApiConnector/connector";
+
+const formSchema = z.object({
+  amount: z.string().min(1, "Amount is required"),
+  lease: z.string().min(1, "Property selection is required"),
+  paymentMethod: z.string().min(1, "Payment method is required"),
+});
 
 export const PaymentForm = () => {
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false);
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["tenantDashboard"],
+    queryFn: apiConnector.TenantDashboard.getTenantDashboard,
+  });
+  const queryClient = useQueryClient();
+  const location = window.location.href;
+
   const form = useForm({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       amount: "",
-      paymentDate: new Date(),
+      lease: "",
       paymentMethod: "",
     },
   });
 
-  const onSubmit = (data) => {
-    toast({
-      title: "Payment Submitted",
-      description: `Your payment of $${data.amount} has been submitted.`,
-    });
-    setIsPaymentSuccessful(true);
+  const onSubmit = async (formData) => {
+    try {
+      await apiConnector.Payment.create({
+        amount: parseFloat(formData.amount),
+        leaseId: formData.lease,
+        paymentMethod: formData.paymentMethod,
+      });
+
+      setIsPaymentSuccessful(true);
+      form.reset();
+      if (location.includes("payments")) {
+        queryClient.invalidateQueries("Payment");
+      } else queryClient.invalidateQueries("tenantDashboard");
+    } catch (error) {
+      console.error("Payment submission failed:", error);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <Card className="shadow-lg">
+        <CardContent className="h-full flex items-center justify-center">
+          <Loader2 className="mx-auto animate-spin" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="shadow-lg">
+        <CardContent className="p-6">
+          <div className="text-red-600">
+            Error loading payment form. Please try again later.
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+  if (data.activeLeases.length === 0) {
+    return (
+      <Card className="shadow-lg">
+        <CardContent className="p-6">
+          <div className="text-red-600">
+            No active leases found. Please contact your landlord.
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="shadow-lg">
@@ -79,7 +130,12 @@ export const PaymentForm = () => {
                 <FormItem>
                   <FormLabel>Amount</FormLabel>
                   <FormControl>
-                    <Input placeholder="1000.00" {...field} />
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="1000.00"
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>
                     Enter the amount you want to pay
@@ -88,60 +144,51 @@ export const PaymentForm = () => {
                 </FormItem>
               )}
             />
-            <FormField
+
+            <Controller
+              name="lease"
               control={form.control}
-              name="paymentDate"
               render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Payment Date</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) =>
-                          date < new Date() || date < new Date("1900-01-01")
-                        }
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
+                <FormItem>
+                  <FormLabel>Payment Property</FormLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select the property" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {data?.activeLeases?.length > 0 ? (
+                        data.activeLeases.map((lease) => (
+                          <SelectItem
+                            key={`lease-${lease.leaseId}`}
+                            value={lease.leaseId.toString()}
+                          >
+                            {lease.propertyAddress}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem key="no-properties" value="" disabled>
+                          No properties available
+                        </SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
                   <FormDescription>
-                    Choose the date for your payment
+                    Choose the lease you would like to make payment for
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
+
+            <Controller
               name="paymentMethod"
+              control={form.control}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Payment Method</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <Select value={field.value} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select payment method" />
@@ -162,7 +209,12 @@ export const PaymentForm = () => {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full">
+
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={!form.formState.isValid}
+            >
               Submit Payment
             </Button>
           </form>
@@ -176,3 +228,5 @@ export const PaymentForm = () => {
     </Card>
   );
 };
+
+export default PaymentForm;

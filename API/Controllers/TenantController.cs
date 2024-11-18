@@ -11,9 +11,9 @@ namespace API.Controllers
     {
         private readonly IUserService _tenantService;
 
-        public TenantController(IUserService tenantService)
+        public TenantController(Func<string, IUserService> userServiceFactory)
         {
-            _tenantService = tenantService;
+            _tenantService = userServiceFactory("Tenant");
         }
 
         [HttpPost("register")]

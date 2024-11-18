@@ -22,7 +22,7 @@ export default function LandingPage() {
       <Navbar setOpenAuthModal={setOpenAuthModal} />
       <Hero setOpenAuthModal={setOpenAuthModal} />
       <Features />
-      <Pricing />
+      <Pricing setOpenAuthModal={setOpenAuthModal} />
       <SocialProof />
       <Footer />
       <Modal

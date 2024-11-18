@@ -148,6 +148,9 @@ namespace API.DB.Migrations
                     b.Property<string>("Status")
                         .HasColumnType("text");
 
+                    b.Property<string>("Urgency")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("PropertyId");

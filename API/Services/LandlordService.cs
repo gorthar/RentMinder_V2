@@ -36,14 +36,17 @@ namespace API.Services
                 await _firebaseService.AddRoleClaimAsync(user.Uid, "Landlord");
 
                 var landlord = _context.Landlords.FirstOrDefault(x => x.FirebaseUserId == user.Uid);
+                int wordCount = user.DisplayName.Split(" ").Length;
+                string firstName = user.DisplayName.Substring(0, user.DisplayName.Length - user.DisplayName.Split(" ")[wordCount - 1].Length).Trim();
+                string lastName = user.DisplayName.Split(" ")[wordCount - 1];
                 if (landlord == null)
                 {
                     landlord = new Landlord
                     {
                         FirebaseUserId = user.Uid,
                         Email = user.Email,
-                        FirstName = user.DisplayName,
-                        LastName = user.DisplayName,
+                        FirstName = firstName,
+                        LastName = lastName,
                         PhoneNumber = user.PhoneNumber,
                         CreatedAt = DateTime.UtcNow,
                         LastLogin = DateTime.UtcNow

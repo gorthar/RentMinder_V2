@@ -1,13 +1,46 @@
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { PropTypes } from "prop-types";
 import { auth } from "../firebase";
+import apiConnector from "@/ApiConnector/connector";
+import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "@/Context/useAuthContext";
 
-export default function GoogleLoginButton({ upIn, setOpenAuthModal }) {
+export default function GoogleLoginButton({
+  upIn,
+  setOpenAuthModal,
+  isLandlord,
+}) {
+  const { refreshUser } = useAuthContext();
+  const navigate = useNavigate();
   async function googleLoginHandler() {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
       console.log(result.user);
+      let registerResponse = null;
+      const idToken = await result.user.getIdToken();
+      if (
+        result.user.metadata.creationTime ===
+        result.user.metadata.lastSignInTime
+      ) {
+        if (isLandlord) {
+          registerResponse = await apiConnector.Landlord.googleLogin({
+            idToken: idToken,
+          });
+        } else {
+          registerResponse = await apiConnector.Tenant.googleLogin({
+            idToken: idToken,
+          });
+        }
+        if (registerResponse.success) {
+          await auth.currentUser.getIdToken(true); // Force token refresh
+          await auth.currentUser.reload(); // Reload user
+          await refreshUser(); // Update context with new token
+          console.log("Signed up successfully");
+        }
+      }
+
+      isLandlord ? navigate("/landlord") : navigate("/tenant/dashboard");
       setOpenAuthModal({ open: false, isLogin: true });
     } catch (error) {
       console.error(error);
@@ -52,4 +85,5 @@ export default function GoogleLoginButton({ upIn, setOpenAuthModal }) {
 GoogleLoginButton.propTypes = {
   setOpenAuthModal: PropTypes.func.isRequired,
   upIn: PropTypes.string.isRequired,
+  isLandlord: PropTypes.bool.isRequired,
 };

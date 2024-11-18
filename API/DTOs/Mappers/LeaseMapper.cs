@@ -22,6 +22,20 @@ namespace API.DTOs.Mappers
             };
         }
 
+        public static TenantLeaseDto ToTenantLeaseDto(this Lease lease)
+        {
+            return new TenantLeaseDto
+            {
+                leaseId = lease.Id,
+                PropertyId = lease.PropertyId,
+                StartDate = lease.StartDate,
+                EndDate = lease.EndDate,
+                MonthlyRent = lease.MonthlyRent,
+                SecurityDeposit = lease.SecurityDeposit,
+                PropertyAddress = ""
+            };
+        }
+
 
 
     }

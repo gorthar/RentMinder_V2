@@ -7,12 +7,35 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+bool IsDevelopment = false;
+string awsConnectionString = Environment.GetEnvironmentVariable("ConnectionString");
+Console.WriteLine($"Connection string: {awsConnectionString}");
+
+if (string.IsNullOrEmpty(awsConnectionString))
+{
+    IsDevelopment = true;
+}
+string devEnvConnectionStringSecret = builder.Configuration["SupaConn1"];
+string connectionString = IsDevelopment ? devEnvConnectionStringSecret : awsConnectionString;
+
+
 // Add services to the container.
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<PropertyManagementContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseNpgsql(connectionString,
+        npgsqlOptionsAction: sqlOptions =>
+        {
+            sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 3,
+                maxRetryDelay: TimeSpan.FromSeconds(30),
+                errorCodesToAdd: null);
+            sqlOptions.CommandTimeout(30);
+            // Add this line for detailed error messages
+            sqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+        }
+    );
 });
 
 var corsPolicy = "CorsPolicy";
@@ -20,7 +43,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: corsPolicy, policy =>
     {
-        policy.WithOrigins("https://localhost:3001", "http://localhost:3000")
+        policy.WithOrigins("https://naw6cequtcz2jxtyifzuhlbfxq0zutiw.lambda-url.us-west-2.on.aws", "https://localhost:3001", "http://localhost:3000")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -29,9 +52,19 @@ builder.Services.AddCors(options =>
 
 
 builder.Services.AddSingleton<FirebaseService>();
-builder.Services.AddScoped<IUserService, TenantService>();
-builder.Services.AddScoped<IUserService, LandlordService>();
+builder.Services.AddScoped<TenantService>();
+builder.Services.AddScoped<LandlordService>();
+builder.Services.AddScoped<Func<string, IUserService>>(serviceProvider => key =>
+{
+    return key switch
+    {
+        "Tenant" => serviceProvider.GetService<TenantService>(),
+        "Landlord" => serviceProvider.GetService<LandlordService>(),
+        _ => throw new KeyNotFoundException()
+    };
+});
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<ITenantDashboardService, TenantDashboardService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -79,6 +112,7 @@ builder.Services.AddSwaggerGen(opt =>
         {securitySchema, new string[] { }}
     });
 });
+builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 
 var app = builder.Build();
 
@@ -103,6 +137,10 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
+app.MapFallbackToController("Index", "Fallback");
+
 app.MapControllers();
 
 var scope = app.Services.CreateScope();
@@ -110,12 +148,29 @@ var context = scope.ServiceProvider.GetRequiredService<PropertyManagementContext
 var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 try
 {
+    logger.LogInformation("Testing database connection...");
+    logger.LogWarning("Connection string: {0}", connectionString);
+    await context.Database.CanConnectAsync();
+    logger.LogInformation("Database connection successful");
+
+    // Then proceed with migrations
+    logger.LogInformation("Running migrations...");
     await context.Database.MigrateAsync();
+
+    // Finally initialize data
+    logger.LogInformation("Initializing database...");
     await DbInitializer.InitDb(context);
+
+    logger.LogInformation("Database initialization completed successfully");
+}
+catch (Npgsql.NpgsqlException ex)
+{
+    logger.LogError(ex, "Error connecting to the database. Please check your connection string and ensure the database is accessible.");
+    throw;
 }
 catch (Exception ex)
 {
-    logger.LogError(ex, "An error occurred seeding the DB.");
+    logger.LogError(ex, "An error occurred while initializing the database");
+    throw;
 }
-
 app.Run();

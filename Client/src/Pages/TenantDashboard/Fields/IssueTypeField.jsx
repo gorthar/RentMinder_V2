@@ -34,6 +34,8 @@ export const IssueTypeField = ({ control }) => {
               <SelectItem value="electrical">Electrical</SelectItem>
               <SelectItem value="appliance">Appliance</SelectItem>
               <SelectItem value="structural">Structural</SelectItem>
+              <SelectItem value="hvac">HVAC</SelectItem>
+              <SelectItem value="pest_control">Pest Control</SelectItem>
               <SelectItem value="other">Other</SelectItem>
             </SelectContent>
           </Select>

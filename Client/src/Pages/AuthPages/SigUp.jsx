@@ -1,7 +1,11 @@
 import { PropTypes } from "prop-types";
 import GoogleLoginButton from "../../SharedComponents/GoogleLoginButton";
 import { useForm } from "react-hook-form";
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  updateProfile,
+} from "firebase/auth";
 import apiConnector from "../../ApiConnector/connector";
 import { toast } from "react-toastify";
 
@@ -12,61 +16,73 @@ export default function SigUp({ setOpenAuthModal, isLandlord }) {
     formState: { errors },
   } = useForm();
 
-  function onSignUpFormSubmit(data) {
-    if (data.password !== data["confirm-password"]) {
-      console.log("Passwords do not match");
-      return;
-    }
+  async function firebaseSignUp(email, password, Name, LastName) {
+    const displayName = Name + " " + LastName;
     const auth = getAuth();
-    createUserWithEmailAndPassword(auth, data.email, data.password)
-      .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
-        console.log(user);
-        if (!isLandlord) {
-          apiConnector.Tenant.register({
-            email: data.email,
-            firstName: data.Name,
-            lastName: data.LastName,
-            idToken: user.accessToken,
-          }).then((response) => {
-            if (response.success === true) {
-              toast.success(response.message);
-              setOpenAuthModal(false);
-            } else {
-              toast.error(response.message);
-            }
-          });
-        } else {
-          apiConnector.Landlord.register({
-            email: data.email,
-            firstName: data.Name,
-            lastName: data.LastName,
-            idToken: user.accessToken,
-          }).then((response) => {
-            if (response.success === true) {
-              toast.success(response.message);
-              setOpenAuthModal(false);
-            } else {
-              toast.error(response.message);
-            }
-          });
-        }
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    await updateProfile(userCredential.user, {
+      displayName: displayName,
+    });
+    return userCredential.user;
+  }
 
-        // ...
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode, errorMessage);
-        if (errorCode === "auth/email-already-in-use") {
-          toast.error("Email already in use");
-        } else if (errorCode === "auth/weak-password") {
-          toast.error("Password is too weak");
-        } else {
-          toast.error("An error occurred while creating the account");
-        }
-      });
+  async function registerUser(apiClient, userData, idToken) {
+    const response = await apiClient.register({
+      email: userData.email,
+      firstName: userData.Name,
+      lastName: userData.LastName,
+      idToken: idToken,
+    });
+    if (response.success) {
+      toast.success(response.message);
+      return true;
+    }
+    toast.error(response.message);
+    return false;
+  }
+
+  async function onSignUpFormSubmit(data) {
+    try {
+      if (data.password !== data["confirm-password"]) {
+        console.log("Passwords do not match");
+        return;
+      }
+
+      const user = await firebaseSignUp(
+        data.email,
+        data.password,
+        data.Name,
+        data.LastName
+      );
+
+      const apiClient = isLandlord
+        ? apiConnector.Landlord
+        : apiConnector.Tenant;
+      const registerSuccess = await registerUser(
+        apiClient,
+        data,
+        user.accessToken
+      );
+
+      if (registerSuccess) {
+        setOpenAuthModal(false);
+      }
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorCode, errorMessage);
+      if (errorCode === "auth/email-already-in-use") {
+        toast.error("Email already in use");
+      } else if (errorCode === "auth/weak-password") {
+        toast.error("Password is too weak");
+      } else {
+        toast.error("An error occurred while creating the account");
+      }
+    }
   }
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
@@ -96,7 +112,11 @@ export default function SigUp({ setOpenAuthModal, isLandlord }) {
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
               Create an account
             </h1>
-            <GoogleLoginButton setOpenAuthModal={setOpenAuthModal} upIn="Up" />
+            <GoogleLoginButton
+              setOpenAuthModal={setOpenAuthModal}
+              upIn="Up"
+              isLandlord={isLandlord}
+            />
             <div className="flex items-center justify-center space-x-2">
               <div className="h-px bg-gray-300 dark:bg-gray-700 w-full"></div>
               <span className="font-normal text-gray-400 dark:text-gray-500">

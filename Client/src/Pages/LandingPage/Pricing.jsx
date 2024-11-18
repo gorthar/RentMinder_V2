@@ -1,6 +1,7 @@
 import PricingCard from "./PricingCard";
+import PropTypes from "prop-types";
 
-export default function Pricing() {
+export default function Pricing({ setOpenAuthModal }) {
   const plans = [
     {
       name: "Starter Plan",
@@ -61,10 +62,18 @@ export default function Pricing() {
         </div>
         <div className="space-y-8 lg:grid lg:grid-cols-3 sm:gap-6 xl:gap-10 lg:space-y-0">
           {plans.map((plan, index) => (
-            <PricingCard key={index} {...plan} />
+            <PricingCard
+              key={index}
+              {...plan}
+              setOpenAuthModal={setOpenAuthModal}
+            />
           ))}
         </div>
       </div>
     </section>
   );
 }
+
+Pricing.propTypes = {
+  setOpenAuthModal: PropTypes.func,
+};

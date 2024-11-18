@@ -24,12 +24,12 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Landlord")]
+        [Authorize]
         public async Task<ActionResult<PagedResult<LeaseDto>>> GetLeases([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var query = _context.Leases
-                .Where(l => l.Property.LandlordId == userId)
+                .Where(l => l.Property.LandlordId == userId || l.TenantId == userId)
                 .Select(l => new LeaseDto
                 {
                     Id = l.Id,
@@ -46,6 +46,7 @@ namespace API.Controllers
             var items = await query
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
+                .AsNoTracking()
                 .ToListAsync();
 
             return Ok(new PagedResult<LeaseDto>
@@ -64,7 +65,7 @@ namespace API.Controllers
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var lease = await _context.Leases
-                .Where(l => l.Property.LandlordId == userId)
+                .Where(l => l.Property.LandlordId == userId || l.TenantId == userId)
                 .Where(l => l.Id == id)
                 .Select(l => new LeaseDto
                 {
@@ -77,6 +78,7 @@ namespace API.Controllers
                     Status = l.EndDate < DateTime.Now ? "Expired" :
                              l.EndDate < DateTime.Now.AddMonths(1) ? "Expiring Soon" : "Active"
                 })
+                .AsNoTracking()
                 .FirstOrDefaultAsync();
 
             if (lease == null)

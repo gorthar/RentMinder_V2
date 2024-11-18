@@ -1,9 +1,31 @@
-import { useAuthContext } from "@/Context/useAuthContext";
+import NotAuthorized from "@/Pages/AuthPages/NotAuthorized";
+import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
-import NotAuthorized from "../Pages/AuthPages/NotAuthorized";
+import { useAuthContext } from "@/Context/useAuthContext";
 
 function RequireLandlord() {
   const { user } = useAuthContext();
+  const [isChecking, setIsChecking] = useState(true);
+
+  useEffect(() => {
+    // Add a small delay to ensure auth state is fully processed
+    const timer = setTimeout(() => {
+      setIsChecking(false);
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [user]);
+
+  if (isChecking) {
+    return (
+      <div className="flex items-center flex-col justify-center h-screen">
+        <Loader2 className="h-20 w-20 animate-spin" />
+        <br />
+        <h2 className="mt-4 text-xl">Checking user...</h2>
+      </div>
+    );
+  }
 
   if (!user) {
     return (

@@ -31,17 +31,21 @@ public class TenantService : IUserService
                 };
             }
 
-            await _firebaseService.AddRoleClaimAsync(user.Uid, "tenant");
+            await _firebaseService.AddRoleClaimAsync(user.Uid, "Tenant");
 
             var tenant = _context.Tenants.FirstOrDefault(x => x.FirebaseUserId == user.Uid);
+            int wordCount = user.DisplayName.Split(" ").Length;
+            string lastName = user.DisplayName.Split(" ")[wordCount - 1];
+            string firstName = user.DisplayName.Substring(0, user.DisplayName.Length - (lastName.Length + 1));
+
             if (tenant == null)
             {
                 tenant = new Tenant
                 {
                     FirebaseUserId = user.Uid,
                     Email = user.Email,
-                    FirstName = user.DisplayName,
-                    LastName = user.DisplayName,
+                    FirstName = firstName,
+                    LastName = lastName,
                     PhoneNumber = user.PhoneNumber,
                     CreatedAt = DateTime.UtcNow,
                     LastLogin = DateTime.UtcNow

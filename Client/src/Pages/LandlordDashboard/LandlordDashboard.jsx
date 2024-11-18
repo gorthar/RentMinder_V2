@@ -14,6 +14,7 @@ function LandlordDashboard() {
     queryKey: ["landlordDashboard"],
     queryFn: apiConnector.LandlordDashboard.getLandlordDasboard,
   });
+  console.log(data);
 
   if (isLoading) {
     return (
