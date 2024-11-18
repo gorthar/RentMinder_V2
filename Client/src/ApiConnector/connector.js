@@ -3,7 +3,12 @@ import { toast } from "react-toastify";
 import { globalNavigate } from "../Utilities/globalNavigator";
 import { auth } from "../firebase";
 
-axios.defaults.baseURL = import.meta.env.VITE_API_URL;
+const isProduction = import.meta.env.PROD;
+
+axios.defaults.baseURL = isProduction
+  ? "https://naw6cequtcz2jxtyifzuhlbfxq0zutiw.lambda-url.us-west-2.on.aws/api"
+  : import.meta.env.VITE_API_URL;
+
 axios.defaults.withCredentials = true;
 
 function responseBody(response) {

@@ -7,11 +7,16 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+bool IsDevelopment = false;
+string awsConnectionString = Environment.GetEnvironmentVariable("ConnectionString");
+Console.WriteLine($"Connection string: {awsConnectionString}");
 
-var isLocalDb = false;
-
-string connectionString = isLocalDb ? builder.Configuration.GetConnectionString("local") : builder.Configuration["SupaConn1"];
-
+if (string.IsNullOrEmpty(awsConnectionString))
+{
+    IsDevelopment = true;
+}
+string devEnvConnectionStringSecret = builder.Configuration["SupaConn1"];
+string connectionString = IsDevelopment ? devEnvConnectionStringSecret : awsConnectionString;
 
 
 // Add services to the container.
@@ -38,7 +43,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: corsPolicy, policy =>
     {
-        policy.WithOrigins("https://localhost:3001", "http://localhost:3000")
+        policy.WithOrigins("https://naw6cequtcz2jxtyifzuhlbfxq0zutiw.lambda-url.us-west-2.on.aws", "https://localhost:3001", "http://localhost:3000")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -107,6 +112,7 @@ builder.Services.AddSwaggerGen(opt =>
         {securitySchema, new string[] { }}
     });
 });
+builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 
 var app = builder.Build();
 
@@ -143,6 +149,7 @@ var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 try
 {
     logger.LogInformation("Testing database connection...");
+    logger.LogWarning("Connection string: {0}", connectionString);
     await context.Database.CanConnectAsync();
     logger.LogInformation("Database connection successful");
 

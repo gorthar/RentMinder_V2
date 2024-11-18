@@ -294,5 +294,6 @@ firebase.json
 firebase.js
 
 wwwroot/
+aws-lambda-tools-defaults.json
 
 # End of https://www.toptal.com/developers/gitignore/api/node,visualstudiocode,windows,macos,linux,test
