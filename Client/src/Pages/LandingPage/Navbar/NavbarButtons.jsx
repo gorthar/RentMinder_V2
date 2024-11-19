@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "../../../SharedComponents/Button";
 import TenantDropdown from "./TenantDropdown";
 import PropTypes from "prop-types";
+import DemoLogins from "./DemoLogins";
 
 function NavbarButtons({ user, setOpenAuthModal, handleLogout }) {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ function NavbarButtons({ user, setOpenAuthModal, handleLogout }) {
             }
           />
           <TenantDropdown setOpenAuthModal={setOpenAuthModal} />
+          <DemoLogins />
         </div>
       ) : (
         <>
