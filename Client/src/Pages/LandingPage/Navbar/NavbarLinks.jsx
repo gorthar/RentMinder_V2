@@ -148,7 +148,11 @@ function NavbarLinks({ user, setOpenAuthModal, handleLogout, toggleMenu }) {
               Sign Up
             </a>
           </AccordionItem>
-          <AccordionItem title="Tenant" isOpen={demoOpen} toggle={toggleDemo}>
+          <AccordionItem
+            title="Demo Login"
+            isOpen={demoOpen}
+            toggle={toggleDemo}
+          >
             <a
               href="#"
               onClick={(e) =>
