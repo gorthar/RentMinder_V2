@@ -15,6 +15,15 @@ export default function TenantDashboard() {
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
   console.log(data);
+  if (isLaoding) {
+    return (
+      <div className="flex items-center justify-center h-screen flex-col">
+        <Loader2 className="h-20 w-20 animate-spin" />
+        <br />
+        <h2 className="mt-4 text-xl">Loading...</h2>
+      </div>
+    );
+  }
   if (!data) {
     return (
       <div className="flex items-center justify-center h-screen">

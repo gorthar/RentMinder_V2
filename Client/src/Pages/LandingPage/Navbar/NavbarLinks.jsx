@@ -1,10 +1,45 @@
 import { useState } from "react";
 import AccordionItem from "./AccordionItem";
 import PropTypes from "prop-types";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function NavbarLinks({ user, setOpenAuthModal, handleLogout, toggleMenu }) {
   const [landlordOpen, setLandlordOpen] = useState(false);
   const [tenantOpen, setTenantOpen] = useState(false);
+  const [demoOpen, setDemoOpen] = useState(false);
+
+  const auth = getAuth();
+  const navigate = useNavigate();
+  function login(isLandlord) {
+    const email = isLandlord ? "test1@test.com" : "test@test.com";
+    const password = "test1234";
+    try {
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          // Signed in
+
+          toast.success("Logged in successfully");
+
+          if (isLandlord) {
+            // redirect to landlord dashboard
+            navigate("/landlord");
+          } else {
+            // redirect to tenant dashboard
+            navigate("/tenant/dashboard");
+          }
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          toast.error(errorMessage, errorCode);
+          console.log(errorCode, errorMessage);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   const toggleLandlord = (e) => {
     e.stopPropagation();
@@ -13,6 +48,10 @@ function NavbarLinks({ user, setOpenAuthModal, handleLogout, toggleMenu }) {
   const toggleTenant = (e) => {
     e.stopPropagation();
     setTenantOpen(!tenantOpen);
+  };
+  const toggleDemo = (e) => {
+    e.stopPropagation();
+    setDemoOpen(!demoOpen);
   };
 
   const handleLinkClick = (e, action) => {
@@ -107,6 +146,32 @@ function NavbarLinks({ user, setOpenAuthModal, handleLogout, toggleMenu }) {
               className="block py-2 text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
             >
               Sign Up
+            </a>
+          </AccordionItem>
+          <AccordionItem title="Tenant" isOpen={demoOpen} toggle={toggleDemo}>
+            <a
+              href="#"
+              onClick={(e) =>
+                handleLinkClick(e, () => {
+                  login(false);
+                  toggleMenu;
+                })
+              }
+              className="block pt-2 text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
+              Tenant Log in
+            </a>
+            <a
+              href="#"
+              onClick={(e) =>
+                handleLinkClick(e, () => {
+                  login(true);
+                  toggleMenu;
+                })
+              }
+              className="block py-2 text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
+              Landlord Log in
             </a>
           </AccordionItem>
         </>
