@@ -1,5 +1,4 @@
 name: Deploy to AWS Lambda
-
 on:
   push:
     branches:
@@ -7,32 +6,26 @@ on:
   pull_request:
     branches:
       - main
-
 env:
   AWS_REGION: us-west-2
   LAMBDA_FUNCTION_NAME: Rentminder
   DOTNET_VERSION: "8.0.202"
   NODE_VERSION: "18.14.1"
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
       # Setup .NET
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-
       # Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-
       # Create Firebase config file
       - name: Create Firebase config
         working-directory: ./Client
@@ -42,7 +35,6 @@ jobs:
           $decodedBytes = [Convert]::FromBase64String($encodedConfig)
           $decodedText = [System.Text.Encoding]::UTF8.GetString($decodedBytes)
           $decodedText | Out-File -FilePath firebase.json -Encoding UTF8
-
       # Install frontend dependencies and build
       - name: Install and build frontend
         working-directory: ./Client
@@ -57,19 +49,16 @@ jobs:
         run: |
           npm ci
           npm run build
-
       # Verify wwwroot directory exists
       - name: Ensure wwwroot directory exists
         working-directory: ./API
         run: mkdir -p wwwroot
-
       # Build and publish .NET project
       - name: Build and publish .NET project
         working-directory: ./API
         run: |
           dotnet restore
           dotnet publish -c Release -o ./publish
-
       # Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -77,14 +66,35 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-
-      # Deploy to Lambda
+      # Deploy to Lambda with retry logic
       - name: Deploy to Lambda
         working-directory: ./API/publish
+        env:
+          MAX_RETRIES: 3
         run: |
-          zip -r ../lambda-deployment.zip .
-          aws lambda update-function-code --function-name ${{ env.LAMBDA_FUNCTION_NAME }} --zip-file fileb://../lambda-deployment.zip
+          retry_count=0
+          while [ $retry_count -lt $MAX_RETRIES ]; do
+            # Zip deployment package
+            zip -r ../lambda-deployment.zip .
+            
+            # Try to update Lambda function code
+            aws lambda update-function-code \
+              --function-name ${{ env.LAMBDA_FUNCTION_NAME }} \
+              --zip-file fileb://../lambda-deployment.zip && break
+            
+            # If failed, wait and increment retry count
+            sleep_time=$((retry_count * 10))
+            echo "Deployment failed. Waiting $sleep_time seconds before retrying..."
+            sleep $sleep_time
+            
+            retry_count=$((retry_count + 1))
+          done
 
+          # Check if all retries failed
+          if [ $retry_count -eq $MAX_RETRIES ]; then
+            echo "Failed to deploy after $MAX_RETRIES attempts"
+            exit 1
+          fi
       # Update Lambda environment variables
       - name: Update Lambda environment
         run: |
@@ -93,4 +103,4 @@ jobs:
             --runtime dotnet8 \
             --handler API \
             --memory-size 256 \
-            --timeout 500 \
+            --timeout 500
