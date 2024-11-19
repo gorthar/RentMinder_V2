@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import usePaginatedQuery from "@/Utilities/usePaginatedQuery";
+import { Loader2 } from "lucide-react";
 
 function MaintenanceRequests() {
   const {
@@ -35,7 +36,9 @@ function MaintenanceRequests() {
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div>Loading properties...</div>
+          <div className="flex justify-center items-center h-32">
+            <Loader2 className="animate-spin h-8 w-8 text-blue-500" />
+          </div>
         ) : (
           <Table>
             <TableHeader>
