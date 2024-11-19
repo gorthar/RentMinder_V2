@@ -95,10 +95,29 @@ jobs:
           fi
       # Update Lambda environment variables
       - name: Update Lambda environment
+        env:
+          MAX_RETRIES: 5
         run: |
-          aws lambda update-function-configuration \
-            --function-name ${{ env.LAMBDA_FUNCTION_NAME }} \
-            --runtime dotnet8 \
-            --handler API \
-            --memory-size 256 \
-            --timeout 500
+          retry_count=0
+          while [ $retry_count -lt $MAX_RETRIES ]; do
+            # Try to update Lambda function configuration
+            aws lambda update-function-configuration \
+              --function-name ${{ env.LAMBDA_FUNCTION_NAME }} \
+              --runtime dotnet8 \
+              --handler API \
+              --memory-size 256 \
+              --timeout 500 && break
+           
+            # If failed, wait and increment retry count
+            sleep_time=$((retry_count * 15))
+            echo "Lambda configuration update failed. Waiting $sleep_time seconds before retrying..."
+            sleep $sleep_time
+           
+            retry_count=$((retry_count + 1))
+          done
+
+          # Check if all retries failed
+          if [ $retry_count -eq $MAX_RETRIES ]; then
+            echo "Failed to update Lambda configuration after $MAX_RETRIES attempts"
+            exit 1
+          fi
