@@ -22,7 +22,6 @@ function MaintenanceRequests() {
     error,
   } = usePaginatedQuery("MaintenanceRequest");
 
-  if (isLoading) return <div>Loading maintenance requests...</div>;
   if (isError)
     return <div>Error loading maintenance requests: {error.message}</div>;
   console.log("Requests:", requests);
@@ -35,42 +34,46 @@ function MaintenanceRequests() {
         <CardTitle>Maintenance Requests</CardTitle>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Property</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Date Submitted</TableHead>
-              <TableHead>Status</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {requests.map((request) => (
-              <TableRow key={request.id}>
-                <TableCell>{request.propertyAddress}</TableCell>
-                <TableCell>{request.description}</TableCell>
-                <TableCell>
-                  {new Date(request.dateSubmitted).toLocaleDateString()}
-                </TableCell>
-                <TableCell>
-                  <span
-                    className={
-                      request.status === "Pending"
-                        ? "text-yellow-500"
-                        : request.status === "In Progress"
-                        ? "text-blue-500"
-                        : request.status === "Completed"
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }
-                  >
-                    {request.status}
-                  </span>
-                </TableCell>
+        {isLoading ? (
+          <div>Loading properties...</div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Property</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead>Date Submitted</TableHead>
+                <TableHead>Status</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {requests.map((request) => (
+                <TableRow key={request.id}>
+                  <TableCell>{request.propertyAddress}</TableCell>
+                  <TableCell>{request.description}</TableCell>
+                  <TableCell>
+                    {new Date(request.dateSubmitted).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    <span
+                      className={
+                        request.status === "Pending"
+                          ? "text-yellow-500"
+                          : request.status === "In Progress"
+                          ? "text-blue-500"
+                          : request.status === "Completed"
+                          ? "text-green-500"
+                          : "text-red-500"
+                      }
+                    >
+                      {request.status}
+                    </span>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
         <div className="mt-4 flex justify-between items-center">
           <Button onClick={goToPreviousPage} disabled={page === 1}>
             Previous Page
