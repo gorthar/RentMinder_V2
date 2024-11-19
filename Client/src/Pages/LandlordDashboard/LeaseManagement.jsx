@@ -20,6 +20,7 @@ function LeaseManagement() {
     isLoading,
     isError,
     error,
+    isFetching,
   } = usePaginatedQuery("Lease");
 
   if (isLoading) return <div>Loading leases...</div>;
@@ -71,7 +72,15 @@ function LeaseManagement() {
           <span>
             Page {page} of {totalPages}
           </span>
-          <Button onClick={goToNextPage} disabled={page === totalPages}>
+          <Button
+            onClick={goToNextPage}
+            disabled={
+              page === totalPages ||
+              isFetching ||
+              totalPages === 1 ||
+              totalPages === 0
+            }
+          >
             Next Page
           </Button>
         </div>

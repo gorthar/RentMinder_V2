@@ -107,7 +107,7 @@ namespace API.Controllers
                 .FirstOrDefaultAsync();
             if (tenant == null)
             {
-                return BadRequest("Tenant does not exist");
+                return BadRequest("Tenant does not exist. Please ask the tenant to sign up first.");
             }
 
 

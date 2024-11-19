@@ -184,7 +184,7 @@ function MaintenanceTable({ propertyId }) {
           <div className="mt-4 flex justify-between items-center">
             <Button
               onClick={goToPreviousPage}
-              disabled={page === 1 || isFetching}
+              disabled={page <= 1 || isFetching}
             >
               Previous Page
             </Button>
@@ -194,7 +194,7 @@ function MaintenanceTable({ propertyId }) {
             </span>
             <Button
               onClick={goToNextPage}
-              disabled={page === totalPages || isFetching}
+              disabled={page >= totalPages || isFetching}
             >
               Next Page
             </Button>

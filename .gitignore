@@ -291,7 +291,7 @@ msbuild.wrn
 
 # Firebase SDK
 firebase.json
-firebase.js
+firebase-config-base64.txt
 
 wwwroot/
 aws-lambda-tools-defaults.json

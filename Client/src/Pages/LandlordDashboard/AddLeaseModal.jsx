@@ -33,8 +33,8 @@ function AddLeaseModal({ isOpen, onClose, onLeaseAdded, propertyId }) {
       onLeaseAdded();
       onClose();
     } catch (error) {
-      console.error("Error adding lease:", error);
-      toast.error("Failed to add lease. Please try again.");
+      console.log("Error adding lease:", error);
+      toast.error(`Failed to add lease. ${error.response.data}`);
     }
   };
 
