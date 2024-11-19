@@ -22,6 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import usePaginatedQueryWithOptions from "@/Utilities/usePaginatedQueryWithOptions";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 
 function MaintenanceTable({ propertyId }) {
   const queryClient = useQueryClient();
@@ -205,3 +206,7 @@ function MaintenanceTable({ propertyId }) {
   );
 }
 export default MaintenanceTable;
+
+MaintenanceTable.propTypes = {
+  propertyId: PropTypes.string,
+};
