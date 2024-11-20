@@ -5,8 +5,10 @@ import { CalendarIcon, DollarSign, Loader2, Wrench } from "lucide-react";
 import apiConnector from "@/ApiConnector/connector";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
 
 export default function TenantDashboard() {
+  const [loading, setLoading] = useState(true);
   const { isLaoding, data, error } = useQuery({
     queryKey: ["tenantDashboard"],
     queryFn: apiConnector.TenantDashboard.getTenantDashboard,
@@ -15,7 +17,13 @@ export default function TenantDashboard() {
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
   console.log(data);
-  if (isLaoding) {
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 3000);
+    return () => clearTimeout(timer); // Cleanup in case component unmounts
+  }, []);
+
+  if (isLaoding || loading) {
     return (
       <div className="flex items-center justify-center h-screen flex-col">
         <Loader2 className="h-20 w-20 animate-spin" />
