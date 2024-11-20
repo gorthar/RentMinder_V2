@@ -33,7 +33,7 @@ function PaymentsTable() {
 
   if (isLoading) {
     return (
-      <Card>
+      <Card className="mt-4">
         <CardHeader>
           <CardTitle>Payment History</CardTitle>
         </CardHeader>
@@ -45,7 +45,7 @@ function PaymentsTable() {
   }
   if (isError) {
     return (
-      <Card>
+      <Card className="mt-4">
         <CardHeader>
           <CardTitle>Payment History</CardTitle>
         </CardHeader>

@@ -8,6 +8,7 @@ function LoggingOut() {
   const navigate = useNavigate();
   const { logOut } = useAuthContext(); // Accessing logOut from AuthContext
   const [progress, setProgress] = useState(0); // State to manage progress
+  sessionStorage.clear(); // Clear session storage on logout
 
   useEffect(() => {
     const performLogout = async () => {
