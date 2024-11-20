@@ -35,7 +35,7 @@ function LeaseManagement() {
       <CardContent>
         {isLoading ? (
           <div className="flex justify-center items-center h-32">
-            <Loader2 className="animate-spin h-8 w-8 text-blue-500" />
+            <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
           </div>
         ) : (
           <Table>

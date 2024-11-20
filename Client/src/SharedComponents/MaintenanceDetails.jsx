@@ -51,7 +51,7 @@ export default function MaintenanceDetails() {
     return (
       <Card className="mt-3 h-[572px] flex justify-center items-center">
         <CardContent>
-          <Loader2 className="mx-auto animate-spin w-36 h-36" />
+          <Loader2 className="mx-auto w-36 h-36 animate-spin text-emerald-500" />
         </CardContent>
       </Card>
     );

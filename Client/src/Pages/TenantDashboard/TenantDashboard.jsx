@@ -5,8 +5,12 @@ import { CalendarIcon, DollarSign, Loader2, Wrench } from "lucide-react";
 import apiConnector from "@/ApiConnector/connector";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
 
 export default function TenantDashboard() {
+  const hasLoadedBefore = sessionStorage.getItem("dashboardLoaded") === "true";
+  console.log("Dashboard has loaded before: ", hasLoadedBefore);
+  const [loading, setLoading] = useState(!hasLoadedBefore);
   const { isLaoding, data, error } = useQuery({
     queryKey: ["tenantDashboard"],
     queryFn: apiConnector.TenantDashboard.getTenantDashboard,
@@ -15,10 +19,22 @@ export default function TenantDashboard() {
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
   console.log(data);
-  if (isLaoding) {
+
+  useEffect(() => {
+    if (!hasLoadedBefore) {
+      const timer = setTimeout(() => {
+        setLoading(false);
+        sessionStorage.setItem("dashboardLoaded", "true"); // Set the flag in sessionStorage
+      }, 2000);
+
+      return () => clearTimeout(timer); // Cleanup in case component unmounts
+    }
+  }, [hasLoadedBefore]);
+
+  if (isLaoding || loading) {
     return (
       <div className="flex items-center justify-center h-screen flex-col">
-        <Loader2 className="h-20 w-20 animate-spin" />
+        <Loader2 className="h-20 w-20 animate-spin text-emerald-500" />
         <br />
         <h2 className="mt-4 text-xl">Loading...</h2>
       </div>
@@ -73,7 +89,7 @@ export default function TenantDashboard() {
   if (isLaoding) {
     return (
       <div className="flex items-center justify-center h-screen flex-col">
-        <Loader2 className="h-20 w-20 animate-spin" />
+        <Loader2 className="h-20 w-20 animate-spin text-emerald-500" />
         <br />
         <h2 className="mt-4 text-xl">Loading...</h2>
       </div>
