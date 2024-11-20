@@ -42,10 +42,10 @@ export default function TenantDashboard() {
   }
   if (!data) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <h2 className="mt-4 text-lg">
-          No active leases found. Please contact your landlord.
-        </h2>
+      <div className="flex items-center justify-center h-screen flex-col">
+        <Loader2 className="h-20 w-20 animate-spin text-emerald-500" />
+        <br />
+        <h2 className="mt-4 text-xl">Loading...</h2>
       </div>
     );
   }
