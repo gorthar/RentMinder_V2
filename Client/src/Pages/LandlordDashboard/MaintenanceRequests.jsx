@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import usePaginatedQuery from "@/Utilities/usePaginatedQuery";
 import { Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function MaintenanceRequests() {
   const {
@@ -22,6 +23,7 @@ function MaintenanceRequests() {
     isError,
     error,
   } = usePaginatedQuery("MaintenanceRequest");
+  const navigate = useNavigate();
 
   if (isError)
     return <div>Error loading maintenance requests: {error.message}</div>;
@@ -51,7 +53,13 @@ function MaintenanceRequests() {
             </TableHeader>
             <TableBody>
               {requests.map((request) => (
-                <TableRow key={request.id}>
+                <TableRow
+                  className="cursor-pointer"
+                  key={request.id}
+                  onClick={() => {
+                    navigate(`/landlord/maintenance/${request.id}`);
+                  }}
+                >
                   <TableCell>{request.propertyAddress}</TableCell>
                   <TableCell>{request.description}</TableCell>
                   <TableCell>

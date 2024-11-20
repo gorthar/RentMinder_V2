@@ -23,7 +23,6 @@ export function AuthProvider({ children }) {
     const userRole = decodedToken?.role;
     const newUser = { ...currentUser, Role: userRole };
     setUser(newUser);
-    console.log("User updated:", newUser);
     setLoading(false);
   };
 
