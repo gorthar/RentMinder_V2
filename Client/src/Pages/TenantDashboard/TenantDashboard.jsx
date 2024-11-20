@@ -25,7 +25,7 @@ export default function TenantDashboard() {
       const timer = setTimeout(() => {
         setLoading(false);
         sessionStorage.setItem("dashboardLoaded", "true"); // Set the flag in sessionStorage
-      }, 2000);
+      }, 3000);
 
       return () => clearTimeout(timer); // Cleanup in case component unmounts
     }
