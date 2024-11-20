@@ -43,7 +43,7 @@ function LoggingOut() {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen">
-      <Loader2 className="h-8 w-8 animate-spin" />
+      <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
       <h2 className="mt-4 text-lg">Logging you out...</h2>
       <div className="mt-4 w-1/3">
         {" "}

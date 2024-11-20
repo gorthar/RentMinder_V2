@@ -72,7 +72,7 @@ function MaintenanceTable({ propertyId }) {
           <CardTitle>Maintenance Request History</CardTitle>
         </CardHeader>
         <CardContent>
-          <Loader2 className="mx-auto animate-spin " />
+          <Loader2 className="mx-auto animate-spin text-emerald-500" />
         </CardContent>
       </Card>
     );

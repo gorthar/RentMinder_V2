@@ -80,7 +80,7 @@ export const PaymentForm = () => {
     return (
       <Card className="shadow-lg">
         <CardContent className="h-full flex items-center justify-center">
-          <Loader2 className="mx-auto animate-spin" />
+          <Loader2 className="mx-auto animate-spin text-emerald-500" />
         </CardContent>
       </Card>
     );

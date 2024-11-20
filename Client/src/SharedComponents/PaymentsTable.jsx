@@ -38,7 +38,7 @@ function PaymentsTable() {
           <CardTitle>Payment History</CardTitle>
         </CardHeader>
         <CardContent>
-          <Loader2 className="mx-auto" />
+          <Loader2 className="mx-auto animate-spin text-emerald-500" />
         </CardContent>
       </Card>
     );
